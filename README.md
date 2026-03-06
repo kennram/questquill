@@ -30,31 +30,32 @@ QuestQuill is a GenAI-powered reading application for kids, designed with a mode
 ### 📖 High-Fidelity Storytelling
 - **Two Story Modes**: 
     - **Classic**: A guided 5-page narrative journey.
-    - **Interactive**: A branching "Choose Your Own Adventure" shaped by student choices.
-- **Intelligent Quest Wizard**: A smart creation modal that dynamically filters out already mastered missions, preventing repetitive content and "gaming" of the system. **Optimized for mobile** with full-screen layouts and large touch targets.
-- **Gemini 2.0 Flash Engine**: High-performance generation with **Validated JSON structures** to prevent "empty magic book" errors.
-- **Reading Gates**: Comprehension-gated progression—students must solve challenges (Vocabulary, Inference, etc.) to unlock the next chapter.
+    - **Interactive**: A branching "Choose Your Own Adventure" shaped by student choices. AI dynamically generates new chapters based on selected paths.
+- **Pedagogical "LITERAL LOCK"**: AI is strictly enforced to only ask comprehension questions based on nouns/adjectives explicitly present in the text, ensuring challenges are fair and solvable.
+- **Intelligent Quest Wizard**: A smart creation modal that dynamically filters out already mastered missions. Includes **Rotating Loading Messages** (e.g., "Mixing in the magic...") to improve perceived performance.
+- **Reading Gates & Clues**: Comprehension-gated progression—students must solve challenges to unlock the next chapter. A safety-valve **"Clue" system** provides the answer after two failed attempts to prevent frustration.
+- **Robust AI Fallback**: A triple-layered engine (Gemini 2.0 -> Pollinations AI -> Static Rescue) ensures the magic never fails, even during API outages.
 
 ### 🗺️ Interactive World Map
 - **Spatial Progress**: A persistent map where students unlock stickers and discover landmarks through reading.
 - **The Trophy Room & Word Bank**: Permanent vaults tracking every adventure written and every word mastered.
 
-### 📊 Pedagogical Analytics
-- **Real-Time Performance Tracking**: Monitors success rates across different comprehension types (Vocabulary, Inference, Literal, Creative).
-- **Struggle Alerts**: Automatically flags students needing support and provides research-backed classroom strategy suggestions.
+### 📊 Teacher Insights & Analytics
+- **Mission Rate Tracking**: A global overview showing the class's alignment with assigned missions.
+- **Student Performance Table**: Detailed tracking of individual completion progress with visual status pips for each assigned mission.
+- **Struggle Alerts**: Automatically flags students needing support (e.g., "Vocabulary Context") and provides research-backed classroom strategy suggestions.
+- **Case-Insensitive Mastery**: Robust normalization ensures missions are marked complete regardless of capitalization or spacing mismatches.
 
 ### 📱 Mobile & Cross-Device Optimization
 - **Responsive Layout Architecture**: Optimized for all screen sizes, from desktop monitors to small-form devices like the iPhone 11.
 - **Adaptive Navigation**: Compact, thumb-friendly navigation bar that prevents overflow and keeps primary actions accessible.
 - **Full-Screen Touch Interface**: Modals and reading views utilize full-screen layouts on mobile to maximize readability and interaction surface area.
-- **Fluid Typography & Padding**: Dynamic scaling of text and spacing to preserve the "toy-like" Pixar aesthetic without compromising legibility on small screens.
 
 ---
 
 ## 🎨 Design System ("Pixar-Inspired")
 *   **Tactile Depth**: UI elements feature `border-b-[8px]` depth that "presses" on interaction.
 *   **The Soft Corner**: Consistent `rounded-[48px]` radius for a toy-like, safe aesthetic.
-*   **Responsive Fluidity**: Adaptive padding and typography that preserves the "toy-like" feel on both massive monitors and small mobile devices.
 *   **The Magic Hour Palette**: Sky Blue (#0EA5E9), Magic Purple (#9333EA), and Sunset Orange (#F97316).
 
 ---
@@ -107,6 +108,7 @@ npm run dev
 - [x] **📜 Magical Quest Log**: Unified tracking for classroom and home goals.
 - [x] **🎓 Student Auth Model**: Class code login and cookie sessions.
 - [x] **🎙️ Cinematic Narration**: Integration with ElevenLabs for high-fidelity storytelling voices.
+- [x] **🎮 Interactive Story Mode**: Choice-based branching narratives.
 - [ ] **🧠 Live LLM Pedagogical Advisor**: Upgrade struggle alerts to analyze *why* a student is struggling.
 - [ ] **🎨 Student Experience Polish**: Add tactile "toy-like" sound effects and enhanced animation.
 - [ ] **🎙️ Voice-to-Adventure**: Implement Speech-to-Text for story answers.

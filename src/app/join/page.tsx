@@ -1,12 +1,8 @@
 import JoinClassForm from "@/components/JoinClassForm";
 import Link from "next/link";
-import { ArrowLeft, UserCircle } from "lucide-react";
-import { createClient } from "@/lib/supabase-server";
+import { ArrowLeft } from "lucide-react";
 
 export default async function JoinPage() {
-  const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-
   return (
     <div className="min-h-screen bg-[#F0F9FF] font-sans flex flex-col items-center justify-center p-4 relative overflow-hidden">
       {/* Background Decor */}
@@ -18,10 +14,10 @@ export default async function JoinPage() {
 
       <div className="absolute top-6 left-6 z-20">
         <Link 
-          href={session ? "/dashboard" : "/"}
+          href="/"
           className="flex items-center gap-2 px-6 py-3 bg-white text-sky-500 rounded-2xl font-black shadow-lg hover:scale-105 transition-transform border-b-4 border-sky-100 active:border-b-0 active:translate-y-1"
         >
-          <ArrowLeft className="w-5 h-5" /> Back to {session ? "Dashboard" : "Home"}
+          <ArrowLeft className="w-5 h-5" /> Back to Home
         </Link>
       </div>
 

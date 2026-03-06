@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     const normalizedMission = trimmedMission.toLowerCase();
 
     // 3. Update the child's completed missions array (Case-insensitive check)
-    const alreadyCompleted = currentCompletions.some(m => m.trim().toLowerCase() === normalizedMission);
+    const alreadyCompleted = currentCompletions.some((m: string) => m.trim().toLowerCase() === normalizedMission);
 
     if (!alreadyCompleted) {
       console.log(`[MISSION API] Adding "${trimmedMission}" to completion history for child ${childId}`);

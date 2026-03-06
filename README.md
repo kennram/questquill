@@ -12,10 +12,22 @@ QuestQuill is a GenAI-powered reading application for kids, designed with a mode
     - **Instant Magic Activation**: Robust webhook-powered backend that instantly promotes users to "Legendary" status upon successful payment.
     - **Self-Service Billing**: Integrated customer billing portal for subscription management.
 
+### 🛡️ Production-Grade Security & Access
+- **Strict Role-Based Redirects**: Next.js middleware strictly segments Teacher and Student environments. Any attempt by a student session to access Teacher routes results in an immediate redirect to their specific dashboard.
+- **Student Profile Locking**: Once logged in via a class code, students are "locked" into their specific explorer identity. All lobby-level navigation and teacher-only analytics tabs are hard-gated and hidden to ensure privacy and focus.
+- **Hard-Gated Entry Paths**: The classroom login path (`/join`) is isolated from the main dashboard, ensuring that students cannot accidentally "step back" into administrative teacher views.
+- **Secure Session Management**: Student sessions are maintained via `httpOnly` cookies with `sameSite: "lax"` enforcement and environment-aware `secure` flags, preventing CSRF and ensuring session integrity in live environments.
+
 ### 🎓 Classroom Infrastructure & Auth
 - **Human-Readable Class Codes**: Teachers generate production-grade, high-entropy codes (e.g., `SILVER-FOX-205`) for frictionless classroom entry.
 - **Cookie-Based Student Sessions**: Students login via Class Code without email/password. Sessions are maintained via secure, persistent `student_session` cookies.
 - **Dual-Auth API Layer**: Backend endpoints detect both standard Supabase User auth and Student Session cookies, utilizing `supabaseAdmin` to ensure data persistence across all roles.
+
+### 🏆 Milestone-Based Guide Ranks
+- **Dynamic Growth Path**: Guides (Teachers/Parents) earn ranks based on their students' reading milestones:
+    - **NOVICE**: The beginning of the journey.
+    - **VETERAN**: Awarded after 10 completed quests.
+    - **ELITE**: The highest honor, reached after 25+ adventures.
 
 ### 🧠 Parent & Teacher Directed AI
 - **Family Quest Hub (Parents Only)**: A dedicated mission control center where parents can set personalized goals for each explorer. Missions set here are exclusive to the family environment.
@@ -41,15 +53,10 @@ QuestQuill is a GenAI-powered reading application for kids, designed with a mode
 - **The Trophy Room & Word Bank**: Permanent vaults tracking every adventure written and every word mastered.
 
 ### 📊 Teacher Insights & Analytics
-- **Mission Rate Tracking**: A global overview showing the class's alignment with assigned missions.
+- **Mission Rate Tracking**: A global overview showing the class's alignment with assigned missions, calculated as an average of individual student progress.
 - **Student Performance Table**: Detailed tracking of individual completion progress with visual status pips for each assigned mission.
 - **Struggle Alerts**: Automatically flags students needing support (e.g., "Vocabulary Context") and provides research-backed classroom strategy suggestions.
 - **Case-Insensitive Mastery**: Robust normalization ensures missions are marked complete regardless of capitalization or spacing mismatches.
-
-### 📱 Mobile & Cross-Device Optimization
-- **Responsive Layout Architecture**: Optimized for all screen sizes, from desktop monitors to small-form devices like the iPhone 11.
-- **Adaptive Navigation**: Compact, thumb-friendly navigation bar that prevents overflow and keeps primary actions accessible.
-- **Full-Screen Touch Interface**: Modals and reading views utilize full-screen layouts on mobile to maximize readability and interaction surface area.
 
 ---
 
@@ -109,6 +116,7 @@ npm run dev
 - [x] **🎓 Student Auth Model**: Class code login and cookie sessions.
 - [x] **🎙️ Cinematic Narration**: Integration with ElevenLabs for high-fidelity storytelling voices.
 - [x] **🎮 Interactive Story Mode**: Choice-based branching narratives.
+- [x] **🛡️ Advanced Role Security**: Locked student profiles and middleware gating.
 - [ ] **🧠 Live LLM Pedagogical Advisor**: Upgrade struggle alerts to analyze *why* a student is struggling.
 - [ ] **🎨 Student Experience Polish**: Add tactile "toy-like" sound effects and enhanced animation.
 - [ ] **🎙️ Voice-to-Adventure**: Implement Speech-to-Text for story answers.

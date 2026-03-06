@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { Sparkles, BookOpen, Map as MapIcon, Users, Crown, ChevronRight, Zap, Volume2, ShieldCheck, Star, BarChart3, AlertCircle, TrendingUp } from "lucide-react";
 import StoryCarousel from "@/components/StoryCarousel";
+import MarketingNav from "@/components/MarketingNav";
+import MarketingFooter from "@/components/MarketingFooter";
 
 export default function LandingPage() {
   return (
@@ -13,23 +15,7 @@ export default function LandingPage() {
         <div className="absolute bottom-[-10%] right-[-10%] w-[60%] md:w-[40%] h-[40%] bg-purple-200/50 rounded-full blur-[80px] md:blur-[120px] animate-pulse delay-700" />
       </div>
 
-      {/* Navigation */}
-      <nav className="relative z-50 flex justify-between items-center px-4 sm:px-8 md:px-16 py-6 md:py-8">
-        <div className="flex items-center gap-2 sm:gap-3 group cursor-pointer">
-          <div className="bg-white p-2 md:p-3 rounded-xl md:rounded-2xl shadow-lg border-2 border-sky-100 group-hover:rotate-6 transition-transform duration-300">
-            <span className="text-xl md:text-3xl">🖋️</span>
-          </div>
-          <h1 className="text-lg sm:text-xl md:text-3xl font-black text-sky-600 font-comic tracking-tight uppercase block">QuestQuill</h1>
-        </div>
-        <div className="flex items-center gap-2 sm:gap-4">
-          <Link href="/login" className="px-3 sm:px-8 py-3 text-sky-600 font-black hover:bg-sky-50 rounded-xl md:rounded-2xl transition-all text-xs sm:text-base">
-            Log In
-          </Link>
-          <Link href="/signup" className="px-4 sm:px-8 py-3 sm:py-4 bg-sky-500 text-white font-black rounded-xl md:rounded-2xl shadow-[0_4px_0_rgb(7,118,181)] sm:shadow-[0_8px_0_rgb(7,118,181)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all flex items-center gap-1 sm:gap-2 group text-xs sm:text-base whitespace-nowrap">
-            <span className="hidden xs:inline">Start</span> Adventure <ChevronRight className="w-3.5 h-3.5 sm:w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </div>
-      </nav>
+      <MarketingNav />
 
       {/* Hero Section */}
       <header className="relative z-10 max-w-7xl mx-auto px-6 md:px-16 pt-8 md:pt-16 pb-20 md:pb-32 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center text-center lg:text-left">
@@ -221,77 +207,36 @@ export default function LandingPage() {
               icon: <Zap className="w-7 h-7 md:w-8 md:h-8" />, 
               title: "Gemini 2.0 AI", 
               desc: "Deeply creative storytelling that adapts to your child's feedback in real-time.",
-              color: "bg-orange-100 text-orange-600"
+              color: "bg-orange-100 text-orange-600",
+              link: "/features"
             },
             { 
               icon: <Volume2 className="w-7 h-7 md:w-8 md:h-8" />, 
               title: "Cinematic Audio", 
               desc: "High-quality narration that brings characters to life with expressive voices.",
-              color: "bg-purple-100 text-purple-600"
+              color: "bg-purple-100 text-purple-600",
+              link: "/features"
             },
             { 
               icon: <MapIcon className="w-7 h-7 md:w-8 md:h-8" />, 
               title: "The Frontiers Map", 
               desc: "A growing world that unlocks as children read more and master new words.",
-              color: "bg-emerald-100 text-emerald-600"
+              color: "bg-emerald-100 text-emerald-600",
+              link: "/features"
             }
           ].map((f, i) => (
-            <div key={i} className="p-8 md:p-10 rounded-[32px] md:rounded-[40px] bg-white shadow-xl border-2 border-sky-50 group hover:-translate-y-2 transition-all">
+            <Link href={f.link} key={i} className="p-8 md:p-10 rounded-[32px] md:rounded-[40px] bg-white shadow-xl border-2 border-sky-50 group hover:-translate-y-2 transition-all">
               <div className={`w-14 h-14 md:w-16 md:h-16 ${f.color} rounded-2xl flex items-center justify-center mx-auto mb-6 md:mb-8 group-hover:rotate-12 transition-transform`}>
                 {f.icon}
               </div>
               <h4 className="text-xl md:text-2xl font-black text-sky-950 font-comic mb-4">{f.title}</h4>
               <p className="text-sky-900/60 font-bold leading-relaxed text-sm md:text-base">{f.desc}</p>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-sky-950 py-16 md:py-24 px-6 md:px-16 text-white text-center md:text-left overflow-hidden relative">
-        <div className="absolute top-0 right-0 p-32 opacity-10 rotate-12 pointer-events-none hidden sm:block">
-          <span className="text-[200px] md:text-[300px]">🖋️</span>
-        </div>
-        <div className="max-w-7xl mx-auto relative z-10 grid sm:grid-cols-2 md:grid-cols-4 gap-12 md:gap-16">
-          <div className="sm:col-span-2">
-            <h3 className="text-3xl md:text-4xl font-black font-comic mb-6 uppercase">QuestQuill</h3>
-            <p className="text-sky-200/60 font-bold text-lg md:text-xl max-w-sm mb-8 leading-relaxed mx-auto md:mx-0">
-              Crafting magical reading journeys for the next generation of explorers and dreamers.
-            </p>
-            <div className="flex gap-3 justify-center md:justify-start">
-              {[
-                "https://images.unsplash.com/photo-1517070208541-6ddc4d3efbcb?auto=format&fit=crop&q=80&w=150",
-                "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150",
-                "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=150",
-                "https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&q=80&w=150"
-              ].map((src, i) => (
-                <div key={i} className="w-10 h-10 md:w-12 md:h-12 bg-white/10 rounded-xl overflow-hidden hover:bg-white/20 transition-all hover:scale-110 border border-white/10 shrink-0">
-                  <img src={src} alt="Community Member" className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" />
-                </div>
-              ))}
-            </div>
-          </div>
-          <div>
-            <h5 className="font-black uppercase tracking-widest text-sky-400 text-xs md:text-sm mb-6">Product</h5>
-            <ul className="space-y-4 font-bold text-sky-200/80 text-sm md:text-base">
-              <li className="hover:text-white cursor-pointer transition-colors">Features</li>
-              <li className="hover:text-white cursor-pointer transition-colors">Pricing</li>
-              <li className="hover:text-white cursor-pointer transition-colors">Classroom</li>
-            </ul>
-          </div>
-          <div>
-            <h5 className="font-black uppercase tracking-widest text-sky-400 text-xs md:text-sm mb-6">Company</h5>
-            <ul className="space-y-4 font-bold text-sky-200/80 text-sm md:text-base">
-              <li className="hover:text-white cursor-pointer transition-colors">Privacy</li>
-              <li className="hover:text-white cursor-pointer transition-colors">Terms</li>
-              <li className="hover:text-white cursor-pointer transition-colors">Support</li>
-            </ul>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto mt-16 md:mt-24 pt-8 border-t border-white/10 text-sky-200/40 font-bold text-[10px] md:text-xs text-center md:text-left">
-          © 2026 QuestQuill Adventure Studios. All rights reserved.
-        </div>
-      </footer>
+      <MarketingFooter />
     </div>
   );
 }

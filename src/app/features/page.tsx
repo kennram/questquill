@@ -104,17 +104,16 @@ export default function FeaturesPage() {
               <p className="text-lg md:text-xl text-sky-900/60 font-bold leading-relaxed mb-8">
                 QuestQuill tracks every challenge attempt. Our dashboard shows you exactly where a student is thriving or struggling, from vocabulary context to inferential reasoning.
               </p>
-              <div className="bg-purple-50 p-6 rounded-3xl border-2 border-purple-100 italic font-bold text-purple-900/70">
+              <div className="bg-purple-50 p-6 rounded-3xl border-2 border-purple-100 italic font-bold text-purple-900/70 shadow-sm">
                 &quot;Leo is struggling with 'Literal Comprehension'. Try asking him to point to the main character in the next story.&quot;
               </div>
             </div>
-            <div className="bg-white p-8 rounded-[48px] shadow-2xl border-4 border-purple-100 rotate-1 animate-in zoom-in duration-1000">
-              <div className="space-y-6">
-                <div className="h-8 bg-sky-50 rounded-full w-[80%] animate-pulse" />
-                <div className="h-8 bg-purple-50 rounded-full w-[60%] animate-pulse delay-100" />
-                <div className="h-8 bg-emerald-50 rounded-full w-[90%] animate-pulse delay-200" />
-                <div className="h-8 bg-orange-50 rounded-full w-[40%] animate-pulse delay-300" />
-              </div>
+            <div className="bg-white p-4 rounded-[48px] shadow-2xl border-8 border-white -rotate-1 animate-in zoom-in duration-1000">
+              <img 
+                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800" 
+                alt="Pedagogical Analytics" 
+                className="w-full aspect-[4/3] object-cover rounded-[40px]"
+              />
             </div>
           </div>
 

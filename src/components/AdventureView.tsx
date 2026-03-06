@@ -219,34 +219,40 @@ export default function AdventureView({ story, classMission = null, role = "pare
         body: JSON.stringify({ storyId: story.id, childId: story.child_id, storyTitle: story.title }),
       });
       const data = await res.json();
-      
+
       const missionToComplete = story.mission || classMission;
 
       if (missionToComplete) {
-        await fetch("/api/complete-mission", {
+        console.log(`[FINISH] Marking mission as complete: "${missionToComplete}"`);
+        const mRes = await fetch("/api/complete-mission", {
           method: "POST",
           body: JSON.stringify({ childId: story.child_id, missionText: missionToComplete }),
         });
-        
+
+        if (!mRes.ok) {
+          const mErr = await mRes.json().catch(() => ({ error: "Unknown error" }));
+          console.error("[FINISH] Mission completion failed:", mErr.error);
+        }
+
         if (onFinish) {
           onFinish(missionToComplete);
         }
       }
 
-      setCelebrationData({ 
-        newLevel: data.newLevel, 
+      setCelebrationData({
+        newLevel: data.newLevel,
         leveledUp: data.leveledUp,
         gemsEarned: data.gemsEarned || 10
       });
       setShowCelebration(true);
       router.refresh();
-    } catch {
+    } catch (err) {
+      console.error("[FINISH] Error finishing adventure:", err);
       router.push(dashboardPath);
     } finally {
       setClaimingSticker(false);
     }
   };
-
   const cleanString = (str: string) => (str || "").toLowerCase().replace(/[^a-z0-9]/g, "").trim();
 
   const checkAnswer = (val: string) => {

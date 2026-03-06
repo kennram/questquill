@@ -90,7 +90,8 @@ Execute the following SQL in your Supabase Editor to ensure all pedagogical colu
 ALTER TABLE children ADD COLUMN IF NOT EXISTS reading_level INTEGER DEFAULT 1;
 ALTER TABLE children ADD COLUMN IF NOT EXISTS avatar_url TEXT;
 ALTER TABLE children ADD COLUMN IF NOT EXISTS last_completed_mission TEXT;
-ALTER TABLE children ADD COLUMN IF NOT EXISTS assigned_missions TEXT[];
+ALTER TABLE children ADD COLUMN IF NOT EXISTS completed_missions TEXT[] DEFAULT '{}';
+ALTER TABLE children ADD COLUMN IF NOT EXISTS assigned_missions TEXT[] DEFAULT '{}';
 ```
 
 ### 3. Installation

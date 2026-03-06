@@ -6,6 +6,7 @@ CREATE TABLE profiles (
     avatar_url TEXT,
     is_premium BOOLEAN DEFAULT FALSE,
     class_mission TEXT, -- Shared mission/prompt for all students (Teacher only)
+    class_missions TEXT[] DEFAULT '{}', -- Multiple active missions
     class_code TEXT UNIQUE, -- 6-character code for student login (e.g. LION-92)
     story_count_monthly INTEGER DEFAULT 0,
     last_limit_reset TIMESTAMPTZ DEFAULT NOW(),
@@ -23,6 +24,8 @@ CREATE TABLE children (
     avatar_url TEXT,
     gems INTEGER DEFAULT 0,
     last_completed_mission TEXT, -- The last teacher mission they finished
+    completed_missions TEXT[] DEFAULT '{}', -- History of all completed missions
+    assigned_missions TEXT[] DEFAULT '{}', -- Parent-assigned individual missions
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -57,4 +60,23 @@ CREATE TABLE challenge_logs (
     is_success BOOLEAN NOT NULL,
     attempts INTEGER DEFAULT 1,
     created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Stickers / Trophy Room
+CREATE TABLE stickers (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    child_id UUID REFERENCES children(id) ON DELETE CASCADE,
+    story_id UUID REFERENCES stories(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    image_url TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- World Map Discoveries
+CREATE TABLE map_discoveries (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    child_id UUID REFERENCES children(id) ON DELETE CASCADE,
+    landmark_id TEXT NOT NULL, -- e.g. 'crystal-cave'
+    discovered_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(child_id, landmark_id)
 );

@@ -28,7 +28,8 @@ import {
   RefreshCw,
   Ghost,
   Trash2,
-  Plus
+  Plus,
+  Target
 } from "lucide-react";
 import { addClassMission, deleteClassMission, generateClassCode, resetStudentMission } from "@/app/dashboard/actions";
 
@@ -42,6 +43,7 @@ interface Child {
   gems?: number;
   last_completed_mission?: string;
   completed_missions?: string[];
+  assigned_missions?: string[];
 }
 
 interface Story {
@@ -103,6 +105,8 @@ export default function TeacherAnalytics({
   const [error, setError] = useState<string | null>(null);
 
   // --- MISSION HANDLER ---
+  const normalizeMission = (m: string | null | undefined) => m?.trim().toLowerCase() || "";
+
   const handleAddMission = async () => {
     if (!missionInput.trim()) return;
     setIsUpdatingMission(true);
@@ -176,26 +180,10 @@ export default function TeacherAnalytics({
     };
   }, [stories, vocabulary, challengeLogs, dateRange]);
 
-  // --- AGGREGATE METRICS ---
-  const stats = useMemo(() => {
-    const totalStudents = children.length;
-    const totalStories = filteredData.stories.length;
-    const totalWords = filteredData.vocabulary.length;
-    
-    const avgLevel = totalStudents > 0 
-      ? (children.reduce((acc, c) => acc + (c.explorer_level || 1), 0) / totalStudents).toFixed(1)
-      : 0;
-
-    return {
-      totalStudents,
-      totalStories,
-      totalWords,
-      avgLevel
-    };
-  }, [children, filteredData]);
-
-  // --- STUDENT PROGRESS DATA ---
+  // --- STUDENT PROGRESS DATA (Moved up for use in stats) ---
   const studentData = useMemo(() => {
+    const normalizedClassMissions = classMissions.map(normalizeMission);
+
     return children.map(child => {
       const studentStories = filteredData.stories.filter(s => s.child_id === child.id).length;
       const studentWords = filteredData.vocabulary.filter(v => v.child_id === child.id).length;
@@ -215,15 +203,51 @@ export default function TeacherAnalytics({
         const avgCompAttempts = compLogs.reduce((acc, l) => acc + l.attempts, 0) / compLogs.length;
         if (avgCompAttempts > 1.8) struggles.push("Comprehension");
       }
+
+      // Mission status
+      const completedSet = new Set([
+        ...(child.completed_missions || []), 
+        child.last_completed_mission
+      ].filter(Boolean).map(normalizeMission));
+
+      const missionProgress = normalizedClassMissions.length > 0 
+        ? Math.round((normalizedClassMissions.filter(m => completedSet.has(m)).length / normalizedClassMissions.length) * 100)
+        : 0;
       
       return {
         ...child,
         storyCount: studentStories,
         wordCount: studentWords,
-        struggles
+        struggles,
+        missionProgress,
+        completedSet
       };
     }).sort((a, b) => (b.explorer_level || 0) - (a.explorer_level || 0));
-  }, [children, filteredData]);
+  }, [children, filteredData, classMissions]);
+
+  // --- AGGREGATE METRICS ---
+  const stats = useMemo(() => {
+    const totalStudents = children.length;
+    const totalStories = filteredData.stories.length;
+    const totalWords = filteredData.vocabulary.length;
+    
+    const avgLevel = totalStudents > 0 
+      ? (children.reduce((acc, c) => acc + (c.explorer_level || 1), 0) / totalStudents).toFixed(1)
+      : 0;
+
+    // Mission Completion Rate (Average of individual progress)
+    const missionRate = totalStudents > 0 
+      ? Math.round(studentData.reduce((acc, s) => acc + s.missionProgress, 0) / totalStudents)
+      : 0;
+
+    return {
+      totalStudents,
+      totalStories,
+      totalWords,
+      avgLevel,
+      missionRate
+    };
+  }, [children, filteredData, studentData]);
 
   // --- CLASSROOM STRATEGY ADVISOR LOGIC ---
   const classroomStrategy = useMemo(() => {
@@ -425,11 +449,12 @@ export default function TeacherAnalytics({
       )}
 
       {/* --- TOP LEVEL OVERVIEW CARDS --- */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-6">
         {[
           { label: "Students", value: stats.totalStudents, icon: <Users />, color: "bg-blue-500", sub: "Active Explorers" },
           { label: "Stories", value: stats.totalStories, icon: <BookOpen />, color: "bg-orange-500", sub: `This period` },
           { label: "Vocab", value: stats.totalWords, icon: <Star />, color: "bg-purple-500", sub: "Class Mastery" },
+          { label: "Mission Rate", value: `${stats.missionRate}%`, icon: <Target className="w-5 h-5 md:w-8 md:h-8" />, color: "bg-pink-500", sub: "Goal Alignment" },
           { label: "Avg Lv.", value: stats.avgLevel, icon: <Trophy />, color: "bg-emerald-500", sub: "Class Progress" },
         ].map((item, i) => (
           <div key={i} className="bg-white p-4 md:p-8 rounded-2xl md:rounded-[40px] shadow-xl border-2 md:border-4 border-white group hover:-translate-y-1 transition-all">
@@ -467,7 +492,8 @@ export default function TeacherAnalytics({
                 <th className="px-4 md:px-10 py-4 md:py-6 text-sky-900/40 font-black uppercase tracking-widest text-[8px] md:text-xs whitespace-nowrap">Explorer</th>
                 <th className="px-4 md:px-10 py-4 md:py-6 text-sky-900/40 font-black uppercase tracking-widest text-[8px] md:text-xs text-center whitespace-nowrap">Level</th>
                 <th className="px-4 md:px-10 py-4 md:py-6 text-sky-900/40 font-black uppercase tracking-widest text-[8px] md:text-xs text-center whitespace-nowrap">Stories</th>
-                <th className="px-4 md:px-10 py-4 md:py-6 text-sky-900/40 font-black uppercase tracking-widest text-[8px] md:text-xs min-w-[140px] md:min-w-[180px] whitespace-nowrap">Progress</th>
+                <th className="px-4 md:px-10 py-4 md:py-6 text-sky-900/40 font-black uppercase tracking-widest text-[8px] md:text-xs min-w-[140px] md:min-w-[180px] whitespace-nowrap">Missions</th>
+                <th className="px-4 md:px-10 py-4 md:py-6 text-sky-900/40 font-black uppercase tracking-widest text-[8px] md:text-xs min-w-[140px] md:min-w-[180px] whitespace-nowrap">Growth</th>
                 <th className="px-4 md:px-10 py-4 md:py-6 text-sky-900/40 font-black uppercase tracking-widest text-[8px] md:text-xs whitespace-nowrap">Alerts</th>
                 <th className="px-4 md:px-10 py-4 md:py-6 text-sky-900/40 font-black uppercase tracking-widest text-[8px] md:text-xs whitespace-nowrap">Strategy</th>
                 <th className="px-4 md:px-10 py-4 md:py-6 text-sky-900/40 font-black uppercase tracking-widest text-[8px] md:text-xs"></th>
@@ -508,8 +534,30 @@ export default function TeacherAnalytics({
                     </td>
                     <td className="px-4 md:px-10 py-4 md:py-8">
                       <div className="space-y-1 md:space-y-2">
+                        <div className="flex justify-between text-[7px] md:text-[10px] font-black uppercase text-pink-500 tracking-widest">
+                          <span>Completions</span>
+                          <span>{student.missionProgress}%</span>
+                        </div>
+                        <div className="h-3 md:h-5 bg-pink-50 rounded-full overflow-hidden border md:border-2 border-white shadow-inner relative">
+                          <div 
+                            className="h-full bg-gradient-to-r from-pink-400 via-pink-500 to-pink-300 transition-all duration-1000 ease-out rounded-full relative"
+                            style={{ width: `${student.missionProgress}%` }}
+                          />
+                        </div>
+                        {classMissions.length > 0 && (
+                          <div className="flex gap-1 overflow-hidden mt-1">
+                            {classMissions.slice(0, 5).map((m, i) => (
+                              <div key={i} className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${student.completedSet.has(m.trim().toLowerCase()) ? 'bg-pink-500' : 'bg-pink-100'}`} />
+                            ))}
+                            {classMissions.length > 5 && <span className="text-[6px] text-pink-300 font-black">+{classMissions.length - 5}</span>}
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 md:px-10 py-4 md:py-8">
+                      <div className="space-y-1 md:space-y-2">
                         <div className="flex justify-between text-[7px] md:text-[10px] font-black uppercase text-sky-400 tracking-widest">
-                          <span>Progress</span>
+                          <span>Level Growth</span>
                           <span>{Math.min((student.explorer_level || 1) * 10, 100)}%</span>
                         </div>
                         <div className="h-3 md:h-5 bg-sky-100/50 rounded-full overflow-hidden border md:border-2 border-white shadow-inner relative">
@@ -553,21 +601,6 @@ export default function TeacherAnalytics({
                     </td>
                     <td className="px-4 md:px-10 py-4 md:py-8 text-right shrink-0">
                       <div className="flex items-center justify-end gap-1 md:gap-2">
-                        {/* DEV RESET BUTTON */}
-                        <button 
-                          onClick={async (e) => { 
-                            e.stopPropagation(); 
-                            if (confirm(`Reset mission status for ${student.name}?`)) {
-                              await resetStudentMission(student.id);
-                              router.refresh();
-                            }
-                          }}
-                          className="p-2 md:p-3 text-sky-200 hover:text-orange-500 transition-colors shrink-0"
-                          title="Dev: Reset Mission Completion"
-                        >
-                          <Ghost className="w-4 h-4 md:w-5 md:h-5" />
-                        </button>
-
                         <button 
                           onClick={() => onSelectStudent(student.id)}
                           className="p-2 md:p-3 bg-white text-sky-400 rounded-lg md:rounded-xl border-2 border-sky-50 hover:bg-sky-500 hover:text-white transition-all shadow-sm group/btn shrink-0"

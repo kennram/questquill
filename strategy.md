@@ -59,3 +59,22 @@ QuestQuill isn't just selling "AI Stories"—we are selling **Pedagogical Visibi
 
 ## 📜 Summary
 QuestQuill leverages the high-engagement loops of modern gaming to deliver the rigorous outcomes of a structured literacy program. By making the struggle visible and the progress beautiful, we create an environment where children don't just learn to read—they learn to **love** reading.
+
+---
+
+## 🔐 Student Identity & Access Security (Selected Path)
+
+To ensure students access only their own data while minimizing login friction, we have selected the **"Secret Shield"** model as our official authentication framework for classroom users.
+
+### The Selected Mechanic: The "Secret Handshake" (Visual MFA)
+*   **The Logic:** Each student is assigned a 2-step sequence of visual icons (e.g., *Blue Owl -> Gold Star*).
+*   **The Security Math:** Using a grid of 9 random icons, a 2-step sequence creates a 1 in 81 probability of a successful guess, making "accidental entry" or "peer guessing" mathematically improbable.
+*   **Selected Safeguards (Anti-Guessing):**
+    *   **The Banishment:** Any incorrect guess immediately sends the user back to the main "Student List." This breaks the rapid-guessing loop and adds enough "soft friction" to discourage curiosity-driven clicking.
+    *   **The Sleepy Mirror (Cooldown):** After 3 failed attempts, a specific student's profile enters a 2-minute "cooldown" state (visible via a "Zzz" icon), making it a non-target for the rest of the lesson.
+    *   **Guardian Alerts:** High failure rates on specific profiles will be flagged in the Teacher Analytics hub as a "Classroom Management" insight.
+
+### Why this fits QuestQuill:
+1.  **Pedagogical:** It teaches young children (Ages 5-9) about digital ownership and privacy through pattern recognition rather than complex alphanumeric strings.
+2.  **Aesthetic:** The "Secret Handshake" feels like a magical ritual, perfectly aligning with our Pixar-inspired UX.
+3.  **Functional:** Works perfectly across both School and Home contexts without requiring hardware (cameras) or external materials (printed QR codes).

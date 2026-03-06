@@ -71,17 +71,17 @@ export default async function ProfilePage() {
       <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-7xl">
         <div className="bg-white/80 backdrop-blur-xl border-4 border-white shadow-2xl rounded-[32px] p-4 flex justify-between items-center px-8 md:px-12 ring-8 ring-sky-50/50">
           <div className="flex items-center gap-6">
-            <Link href="/dashboard" className="p-3 bg-sky-50 text-sky-600 rounded-2xl hover:bg-sky-100 transition-all border-2 border-sky-100 group">
-              <ChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
+            <Link href="/dashboard" className="p-2 md:p-3 bg-sky-50 text-sky-600 rounded-2xl hover:bg-sky-100 transition-all border-2 border-sky-100 group">
+              <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 group-hover:-translate-x-1 transition-transform" />
             </Link>
             <div className="flex items-center gap-2">
-              <span className="text-3xl">🖋️</span>
-              <h1 className="text-2xl font-black text-sky-600 font-comic tracking-tight hidden sm:block">QuestQuill</h1>
+              <span className="text-2xl md:text-3xl">🖋️</span>
+              <h1 className="text-xl md:text-2xl font-black text-sky-600 font-comic tracking-tight hidden sm:block">QuestQuill</h1>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Link href="/dashboard" className="flex items-center gap-2 px-6 py-3 bg-sky-500 text-white font-black rounded-2xl shadow-[0_6px_0_rgb(7,118,181)] hover:shadow-[0_3px_0_rgb(7,118,181)] hover:translate-y-[3px] active:shadow-none active:translate-y-[6px] transition-all text-sm group">
-              <LayoutDashboard className="w-4 h-4 group-hover:rotate-6" /> Go to Dashboard
+            <Link href="/dashboard" className="flex items-center gap-2 px-4 py-2 md:px-6 md:py-3 bg-sky-500 text-white font-black rounded-2xl shadow-[0_4px_0_rgb(7,118,181)] md:shadow-[0_6px_0_rgb(7,118,181)] hover:shadow-[0_2px_0_rgb(7,118,181)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] transition-all text-xs md:text-sm group">
+              <LayoutDashboard className="w-4 h-4 group-hover:rotate-6" /> <span className="hidden sm:inline">Go to Dashboard</span><span className="sm:hidden">Dashboard</span>
             </Link>
           </div>
         </div>

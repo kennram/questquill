@@ -34,14 +34,14 @@ export default async function UpgradePage() {
   return (
     <div className="min-h-screen bg-sky-50 font-sans pb-20 text-sky-900">
       {/* Header */}
-      <nav className="bg-white/80 backdrop-blur-md border-b-4 border-white p-6 flex justify-between items-center px-12 sticky top-0 z-40">
-        <div className="flex items-center gap-6">
-          <Link href="/dashboard/profile" className="p-3 bg-sky-50 text-sky-600 rounded-2xl hover:bg-sky-100 transition-all">
-            <ChevronLeft className="w-6 h-6" />
+      <nav className="bg-white/80 backdrop-blur-md border-b-4 border-white p-4 md:p-6 flex justify-between items-center px-6 md:px-12 sticky top-0 z-40">
+        <div className="flex items-center gap-3 md:gap-6">
+          <Link href="/dashboard/profile" className="p-2 md:p-3 bg-sky-50 text-sky-600 rounded-xl md:rounded-2xl hover:bg-sky-100 transition-all">
+            <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
           </Link>
           <div className="flex items-center gap-2">
-            <span className="text-4xl">🖋️</span>
-            <h1 className="text-3xl font-black text-sky-600 font-comic">QuestQuill</h1>
+            <span className="text-2xl md:text-4xl">🖋️</span>
+            <h1 className="text-xl md:text-3xl font-black text-sky-600 font-comic hidden sm:block">QuestQuill</h1>
           </div>
         </div>
       </nav>

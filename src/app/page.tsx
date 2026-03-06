@@ -19,7 +19,7 @@ export default function LandingPage() {
           <div className="bg-white p-2 md:p-3 rounded-xl md:rounded-2xl shadow-lg border-2 border-sky-100 group-hover:rotate-6 transition-transform duration-300">
             <span className="text-xl md:text-3xl">🖋️</span>
           </div>
-          <h1 className="text-xl md:text-3xl font-black text-sky-600 font-comic tracking-tight uppercase hidden sm:block">QuestQuill</h1>
+          <h1 className="text-lg sm:text-xl md:text-3xl font-black text-sky-600 font-comic tracking-tight uppercase block">QuestQuill</h1>
         </div>
         <div className="flex items-center gap-2 sm:gap-4">
           <Link href="/login" className="px-3 sm:px-8 py-3 text-sky-600 font-black hover:bg-sky-50 rounded-xl md:rounded-2xl transition-all text-xs sm:text-base">

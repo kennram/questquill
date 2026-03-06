@@ -80,7 +80,7 @@ export default async function StudentDashboardPage() {
             <div className="bg-sky-500 p-2 rounded-xl shadow-lg border-2 border-sky-400 group-hover:rotate-6 transition-transform">
               <span className="text-2xl">🖋️</span>
             </div>
-            <h1 className="text-2xl font-black text-sky-600 font-comic tracking-tight hidden sm:block text-shadow-sm">QuestQuill</h1>
+            <h1 className="text-xl md:text-2xl font-black text-sky-600 font-comic tracking-tight hidden sm:block text-shadow-sm">QuestQuill</h1>
           </div>
           
           <div className="flex items-center gap-4">

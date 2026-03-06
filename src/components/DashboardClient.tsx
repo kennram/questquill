@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Plus, Sparkles, User, BookOpen, Settings, Check, Map as MapIcon, ChevronDown, UserCircle, Crown, BarChart3, Users, ListPlus, X, ChevronRight, Scroll, LogOut, MoreHorizontal, LayoutGrid, Layout, Gem, Target, History, Home, Trash2 } from "lucide-react";
+import { Plus, Sparkles, User, BookOpen, Settings, Check, Map as MapIcon, ChevronDown, UserCircle, Crown, BarChart3, Users, ListPlus, X, ChevronRight, Scroll, LogOut, MoreHorizontal, LayoutGrid, Layout, Gem, Target, History, Home, Trash2, Loader2 } from "lucide-react";
 import QuestWizard from "@/components/QuestWizard";
 import AdventureView from "@/components/AdventureView";
 import AddChildModal from "@/components/AddChildModal";
@@ -127,6 +127,13 @@ export default function DashboardClient({
     }
   }, [role, children, selectedChildId]);
 
+  // Security: Prevent students from leaving their profile
+  const handleDeselectChild = () => {
+    if (role === "student") return;
+    setSelectedChildId(null);
+    setActiveTab("world");
+  };
+
   // Handle mission completion masking
   const handleMissionFinish = (mission: string) => {
     setLocallyCompletedMissions(prev => [...prev, mission]);
@@ -159,10 +166,10 @@ export default function DashboardClient({
 
   // Sync selectedChildId with URL param if it exists
   useEffect(() => {
-    if (urlChildId && children.some(c => c.id === urlChildId)) {
+    if (urlChildId && children.some(c => c.id === urlChildId) && role !== "student") {
       setSelectedChildId(urlChildId);
     }
-  }, [urlChildId, children]);
+  }, [urlChildId, children, role]);
 
   // --- FILTERED DATA ---
   const filteredStories = useMemo(() => {
@@ -421,9 +428,13 @@ export default function DashboardClient({
 
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         {!selectedChildId ? (
-          /* --- LOBBY VIEWS --- */
+          /* --- LOBBY VIEWS (Blocked for students via logic above, but hard-gated here too) --- */
           <div className="animate-in zoom-in-95 duration-500">
-            {activeTab === "analytics" && role === "teacher" ? (
+            {role === "student" ? (
+              <div className="text-center p-20">
+                <Loader2 className="w-12 h-12 animate-spin mx-auto text-sky-500" />
+              </div>
+            ) : activeTab === "analytics" && role === "teacher" ? (
               <TeacherAnalytics 
                 children={children} 
                 stories={stories} 

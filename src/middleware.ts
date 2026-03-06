@@ -3,6 +3,9 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+  const studentSession = request.cookies.get('student_session')
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -34,8 +37,18 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Redirect to login if user is not authenticated and trying to access dashboard
-  if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
+  // 1. Block students (cookie only) from Teacher Dashboard
+  if (pathname.startsWith('/dashboard') && studentSession && !user) {
+    return NextResponse.redirect(new URL('/student/dashboard', request.url))
+  }
+
+  // 2. Block teachers (Supabase user) from Student Dashboard to avoid bleed
+  if (pathname.startsWith('/student/dashboard') && user) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
+  // 3. Redirect completely unauthenticated users to login
+  if (!user && !studentSession && (pathname.startsWith('/dashboard') || pathname.startsWith('/student/dashboard'))) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
@@ -43,5 +56,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*'],
+  matcher: ['/dashboard/:path*', '/student/dashboard/:path*'],
 }

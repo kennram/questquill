@@ -58,7 +58,7 @@ export default function FeaturesPage() {
             </div>
             <div className="bg-white p-4 rounded-[48px] shadow-2xl border-8 border-white rotate-2 animate-in zoom-in duration-1000">
               <img 
-                src="https://images.unsplash.com/photo-1512418490979-92798ccc1380?auto=format&fit=crop&q=80&w=800" 
+                src="https://loremflickr.com/800/600/magic,fantasy,book" 
                 alt="AI Storytelling" 
                 className="w-full aspect-[4/3] object-cover rounded-[40px]"
               />

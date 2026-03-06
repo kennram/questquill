@@ -56,6 +56,7 @@ export async function loginStudent(teacherId: string, studentId: string) {
   cookieStore.set("student_session", sessionData, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 7 // 1 week
   });

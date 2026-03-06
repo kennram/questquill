@@ -26,13 +26,6 @@ export default async function JoinPage() {
       </div>
 
       <div className="relative z-10 w-full max-w-lg text-center">
-        {session && (
-          <div className="mb-8 bg-orange-100 border-2 border-orange-200 p-4 rounded-3xl flex items-center gap-3 justify-center text-orange-700 font-bold animate-in slide-in-from-top-4">
-            <UserCircle className="w-6 h-6" />
-            <span>Testing Mode: You are logged in as a Guide.</span>
-          </div>
-        )}
-
         <div className="mb-8">
           <h1 className="text-6xl font-black text-sky-500 font-comic tracking-tight mb-2 text-shadow-lg stroke-white">
             Class Login

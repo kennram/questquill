@@ -232,18 +232,34 @@ export default function QuestWizard({
           )}
 
           {/* Step 1: Who is exploring */}
-          <div className="space-y-2 md:space-y-3">
-            <label className="text-sky-700 font-black uppercase tracking-widest text-[10px] md:text-xs ml-2 md:ml-4 opacity-60 flex items-center gap-2">
-              <Users className="w-3.5 h-3.5 md:w-4 md:h-4" /> {label}
-            </label>
-            <select
-              value={formData.childId}
-              onChange={(e) => setFormData({ ...formData, childId: e.target.value })}
-              className="w-full p-4 md:p-6 bg-sky-50 border-2 md:border-4 border-sky-100 rounded-2xl md:rounded-[32px] focus:border-sky-400 outline-none text-sky-950 font-black text-xl md:text-2xl"
-            >
-              {children.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
-          </div>
+          {role !== "student" ? (
+            <div className="space-y-2 md:space-y-3">
+              <label className="text-sky-700 font-black uppercase tracking-widest text-[10px] md:text-xs ml-2 md:ml-4 opacity-60 flex items-center gap-2">
+                <Users className="w-3.5 h-3.5 md:w-4 md:h-4" /> {label}
+              </label>
+              <select
+                value={formData.childId}
+                onChange={(e) => setFormData({ ...formData, childId: e.target.value })}
+                className="w-full p-4 md:p-6 bg-sky-50 border-2 md:border-4 border-sky-100 rounded-2xl md:rounded-[32px] focus:border-sky-400 outline-none text-sky-950 font-black text-xl md:text-2xl"
+              >
+                {children.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
+          ) : (
+            <div className="bg-sky-50 p-4 md:p-6 rounded-2xl md:rounded-[32px] border-2 md:border-4 border-sky-100 flex items-center gap-4">
+              <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl bg-white flex items-center justify-center text-sky-500 shadow-inner">
+                {activeChild?.avatar_url ? (
+                  <img src={activeChild.avatar_url} className="w-full h-full object-cover rounded-xl" />
+                ) : (
+                  <Users className="w-6 h-6 md:w-8 md:h-8" />
+                )}
+              </div>
+              <div>
+                <p className="text-[10px] md:text-xs font-black text-sky-400 uppercase tracking-widest leading-none mb-1">Explorer</p>
+                <p className="text-xl md:text-2xl font-black text-sky-950 font-comic leading-none">{activeChild?.name}</p>
+              </div>
+            </div>
+          )}
 
           {/* Step 2: Interests */}
           <div className="space-y-2 md:space-y-3">

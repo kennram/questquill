@@ -38,7 +38,25 @@ export default function QuestWizard({
 }: QuestWizardProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [loadingStep, setLoadingStep] = useState(0);
   const [error, setError] = useState<{ message: string, limitReached?: boolean } | null>(null);
+
+  const loadingMessages = [
+    "Writing the words...",
+    "Creating the images...",
+    "Mixing in the magic...",
+    "Almost ready for adventure!"
+  ];
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (loading) {
+      interval = setInterval(() => {
+        setLoadingStep(prev => (prev + 1) % loadingMessages.length);
+      }, 2500);
+    }
+    return () => clearInterval(interval);
+  }, [loading]);
   
   const initialChild = useMemo(() => 
     children.find(c => c.id === selectedChildId) || children[0],
@@ -161,7 +179,8 @@ export default function QuestWizard({
             <div className="w-24 h-24 md:w-32 md:h-32 bg-sky-50 rounded-[32px] md:rounded-[48px] flex items-center justify-center shadow-inner border-4 border-white">
               <Loader2 className="w-12 h-12 md:w-16 md:h-16 text-sky-500 animate-spin" />
             </div>
-            <h2 className="text-3xl md:text-4xl font-black text-sky-950 mt-6 md:mt-8 mb-4 font-comic">Casting Spells...</h2>
+            <h2 className="text-3xl md:text-4xl font-black text-sky-950 mt-6 md:mt-8 mb-4 font-comic">{loadingMessages[loadingStep]}</h2>
+            <p className="text-sky-600 font-bold animate-pulse uppercase tracking-widest text-xs md:text-sm">The magic mirror is working...</p>
           </div>
         )}
 

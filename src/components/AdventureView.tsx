@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { ChevronRight, ChevronLeft, Sparkles, Loader2, CheckCircle2, PartyPopper, Home, ImageOff, Volume2, VolumeX, Ghost, BookMarked, Trophy, Gem, ArrowRight, Crown, Star, Zap, X, Wand2 } from "lucide-react";
+import { ChevronRight, ChevronLeft, Sparkles, Loader2, CheckCircle2, PartyPopper, Home, ImageOff, Volume2, VolumeX, Ghost, BookMarked, Trophy, Gem, ArrowRight, Crown, Star, Zap, X, Wand2, Lightbulb } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { logChallengeAttempt } from "@/app/dashboard/actions";
 
@@ -82,6 +82,7 @@ export default function AdventureView({ story, classMission = null, role = "pare
   const [claimingSticker, setClaimingSticker] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [attempts, setAttempts] = useState<Record<number, number>>({});
+  const [showClue, setShowClue] = useState(false);
   
   const [showCelebration, setShowCelebration] = useState(false);
   const [celebrationData, setCelebrationData] = useState<CelebrationData | null>(null);
@@ -144,6 +145,7 @@ export default function AdventureView({ story, classMission = null, role = "pare
       setCurrentPage(prev => prev + 1);
       setAnswer("");
       setIsCorrect(false);
+      setShowClue(false);
     }
   };
 
@@ -153,10 +155,11 @@ export default function AdventureView({ story, classMission = null, role = "pare
       setCurrentPage(prev => prev - 1);
       setAnswer("");
       setIsCorrect(true);
+      setShowClue(false);
     }
   };
 
-  const handleInteractiveChoice = async (choiceId: string) => {
+  const handleInteractiveChoice = async (choiceId: string, choiceText: string) => {
     stopSpeaking();
     setLoadingNextPage(true);
     try {
@@ -164,15 +167,42 @@ export default function AdventureView({ story, classMission = null, role = "pare
         method: "POST",
         body: JSON.stringify({ 
           storyId: story.id, 
-          choiceId,
-          currentPageIndex: pages.length
+          choiceText,
+          previousPages: pages,
+          level: story.level || 1,
+          name: story.name || "Explorer"
         }),
       });
       const newPage = await res.json();
-      setPages(prev => [...prev, newPage]);
-      setCurrentPage(prev => prev + 1);
-      setAnswer("");
-      setIsCorrect(false);
+      
+      // Trigger image generation if missing
+      if (newPage.imageDescription && !newPage.imageUrl) {
+        fetch("/api/generate-image", {
+          method: "POST",
+          body: JSON.stringify({
+            prompt: newPage.imageDescription,
+            storyId: story.id,
+            pageIndex: pages.length
+          })
+        }).then(res => res.json()).then(imgData => {
+          if (imgData.imageUrl) {
+            setPages(prev => prev.map((p, i) => i === prev.length - 1 ? { ...p, imageUrl: imgData.imageUrl } : p));
+          }
+        });
+      }
+
+      // ENSURE PAGE STATE UPDATES BEFORE NAVIGATING
+      setPages(prev => {
+        const nextPages = [...prev, newPage];
+        // Move to the new page ONLY after adding it to state
+        setTimeout(() => {
+          setCurrentPage(nextPages.length - 1);
+          setAnswer("");
+          setIsCorrect(false);
+          setShowClue(false);
+        }, 10);
+        return nextPages;
+      });
     } catch (err) {
       console.error(err);
     } finally {
@@ -225,13 +255,21 @@ export default function AdventureView({ story, classMission = null, role = "pare
     const actual = cleanString(val);
     
     if (val.length > 0 && !isCorrect) {
-      setAttempts(prev => ({ ...prev, [currentPage]: (prev[currentPage] || 0) + 1 }));
+      setAttempts(prev => {
+        const newCount = (prev[currentPage] || 0) + 1;
+        return { ...prev, [currentPage]: newCount };
+      });
     }
 
-    if (actual === expected || (expected.length > 2 && actual.includes(expected))) {
+    // FUZZY MATCH: Accept if actual contains expected OR expected contains actual (if long enough)
+    const isFuzzyMatch = actual === expected || 
+                        (expected.length > 2 && actual.includes(expected)) ||
+                        (actual.length > 2 && expected.includes(actual));
+
+    if (isFuzzyMatch) {
       setIsCorrect(true);
       const challengeType = page.challenge.toLowerCase().includes("word") || page.challenge.toLowerCase().includes("mean") ? "vocabulary" : "comprehension";
-      logChallengeAttempt({ childId: story.child_id, storyId: story.id, challengeType, isSuccess: true, attempts: attempts[currentPage] || 1 });
+      logChallengeAttempt({ childId: story.child_id, storyId: story.id, challengeType, isSuccess: true, attempts: attempts[currentPage] || 1 }).catch(() => {});
     } else {
       setIsCorrect(false);
     }
@@ -239,19 +277,8 @@ export default function AdventureView({ story, classMission = null, role = "pare
 
   return (
     <div className="max-w-5xl mx-auto flex flex-col items-center pb-24 md:pb-32 px-2 sm:px-4 selection:bg-orange-200">
-      
-      {/* DEV CHEAT BUTTON - Shrink on mobile */}
-      <button 
-        onClick={() => { setCurrentPage(pages.length - 1); setIsCorrect(true); }}
-        className="fixed bottom-4 left-4 z-[200] p-3 md:p-4 bg-orange-500 text-white rounded-full shadow-2xl border-2 md:border-4 border-white hover:scale-110 active:scale-95 transition-all group flex items-center gap-2"
-        title="Cheat: Go to Final Page"
-      >
-        <Ghost className="w-5 h-5 md:w-6 md:h-6 animate-pulse" />
-        <span className="font-black text-[10px] md:text-xs uppercase tracking-widest pr-1 md:pr-2 hidden sm:inline">Skip to End</span>
-      </button>
-      
-      {/* CELEBRATION MODAL */}
-      {showCelebration && (
+
+      {/* CELEBRATION MODAL */}      {showCelebration && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 md:p-6 bg-sky-900/80 backdrop-blur-2xl animate-in fade-in duration-500">
           <div className="bg-white w-full max-w-xl h-full md:h-auto md:max-h-[90vh] rounded-[24px] md:rounded-[64px] p-6 md:p-16 text-center shadow-2xl border-4 md:border-[12px] border-white relative overflow-hidden animate-in zoom-in-90 duration-500 flex flex-col items-center justify-center">
             
@@ -306,7 +333,7 @@ export default function AdventureView({ story, classMission = null, role = "pare
       )}
 
       {/* MAIN ADVENTURE BOOK */}
-      <div className="w-full bg-white rounded-[24px] md:rounded-[56px] shadow-2xl overflow-hidden border-2 md:border-4 border-white relative animate-in slide-in-from-bottom-8 duration-700 flex flex-col">
+      <div key={currentPage} className="w-full bg-white rounded-[24px] md:rounded-[56px] shadow-2xl overflow-hidden border-2 md:border-4 border-white relative animate-in slide-in-from-bottom-8 duration-700 flex flex-col">
         
         {loadingNextPage && (
           <div className="absolute inset-0 z-50 bg-white/95 backdrop-blur-md flex flex-col items-center justify-center p-6 md:p-12 text-center animate-in fade-in duration-500">
@@ -371,25 +398,54 @@ export default function AdventureView({ story, classMission = null, role = "pare
             </div>
 
             {!isCorrect ? (
-              <div className="relative group overflow-hidden rounded-xl md:rounded-3xl border-2 md:border-4 border-sky-100 bg-sky-50/50 shadow-inner">
-                <input 
-                  type="text" 
-                  value={answer}
-                  onChange={(e) => checkAnswer(e.target.value)}
-                  placeholder="Type your answer here..."
-                  className="w-full p-4 md:p-8 bg-transparent outline-none font-bold text-lg md:text-4xl text-sky-900 placeholder:text-sky-200 transition-all"
-                />
-                <div className="absolute bottom-0 left-0 h-1 md:h-2 bg-sky-400 transition-all duration-1000 w-0 group-focus-within:w-full" />
+              <div className="space-y-4 md:space-y-6">
+                <div className="relative group overflow-hidden rounded-xl md:rounded-3xl border-2 md:border-4 border-sky-100 bg-sky-50/50 shadow-inner">
+                  <input 
+                    type="text" 
+                    value={answer}
+                    onChange={(e) => checkAnswer(e.target.value)}
+                    placeholder="Type your answer here..."
+                    className="w-full p-4 md:p-8 bg-transparent outline-none font-bold text-lg md:text-4xl text-sky-900 placeholder:text-sky-200 transition-all"
+                  />
+                  <div className="absolute bottom-0 left-0 h-1 md:h-2 bg-sky-400 transition-all duration-1000 w-0 group-focus-within:w-full" />
+                </div>
+
+                {/* SAFETY VALVE: CLUE BUTTON */}
+                {(attempts[currentPage] >= 2) && (
+                  <div className="animate-in slide-in-from-top-2 duration-500">
+                    {!showClue ? (
+                      <button 
+                        onClick={() => setShowClue(true)}
+                        className="flex items-center gap-2 text-sky-400 font-black text-xs md:text-sm hover:text-sky-600 transition-colors mx-auto md:mx-0 uppercase tracking-widest"
+                      >
+                        <Lightbulb className="w-4 h-4 text-orange-400" /> Need a clue?
+                      </button>
+                    ) : (
+                      <div className="bg-sky-50/50 p-4 md:p-6 rounded-2xl border-2 border-dashed border-sky-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <p className="text-sky-900 font-bold text-sm md:text-xl text-left">
+                          <span className="text-sky-400 uppercase text-[10px] md:text-xs font-black block mb-1">Psst! The magic word is...</span>
+                          &quot;{page.answer}&quot;
+                        </p>
+                        <button 
+                          onClick={() => checkAnswer(page.answer)}
+                          className="px-6 py-2 bg-sky-500 text-white font-black text-sm md:text-lg rounded-xl shadow-lg hover:scale-105 active:scale-95 transition-all"
+                        >
+                          Use Magic
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ) : (
               <div className="space-y-4 md:space-y-6">
                 {isInteractive && !page.isFinal && (
                   <div className="grid grid-cols-1 gap-3 md:gap-4 animate-in slide-in-from-bottom duration-500">
-                    <p className="text-xs md:text-lg font-black text-sky-400 uppercase tracking-widest ml-2">Choose your path:</p>
+                    <p className="text-xs md:text-lg font-black text-sky-400 uppercase tracking-widest ml-2 text-left">Choose your path:</p>
                     {page.choices?.map((choice, i) => (
                       <button
                         key={i}
-                        onClick={() => handleInteractiveChoice(choice.id)}
+                        onClick={() => handleInteractiveChoice(choice.id, choice.text)}
                         className="group p-4 md:p-8 bg-white text-sky-900 font-black text-base md:text-3xl rounded-xl md:rounded-[32px] border-2 md:border-4 border-sky-100 shadow-lg hover:border-sky-400 hover:bg-sky-50 transition-all flex items-center justify-between"
                       >
                         <span className="leading-tight">{choice.text}</span>
@@ -431,7 +487,7 @@ export default function AdventureView({ story, classMission = null, role = "pare
                     <BookMarked className="w-4 h-4 md:w-6 md:h-6" />
                     <span className="font-black text-base md:text-2xl font-comic">{v.word}</span>
                   </div>
-                  <p className="text-sky-600/70 font-bold text-xs md:text-lg leading-relaxed">{v.definition}</p>
+                  <p className="text-sky-600/70 font-bold text-xs md:text-lg leading-relaxed text-left">{v.definition}</p>
                 </div>
               ))}
             </div>

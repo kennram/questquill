@@ -101,19 +101,30 @@ export async function POST(req: Request) {
     // 3. Generation
     let storyData: any = null;
     const interestsArray = Array.isArray(interests) ? interests : interests ? [interests] : ["magic", "adventure"];
+    const isInteractive = mode === "interactive";
     
     const mainPrompt = `
-      Create a 5-page magical reading adventure for a child named ${name}.
+      Create a magical reading adventure for a child named ${name}.
+      Mode: ${isInteractive ? "Interactive (Branching)" : "Classic (Linear)"}.
       Reading Level: ${level} (1: Beginner, 2: Intermediate, 3: Advanced).
       Topic: ${classMission || interestsArray.join(", ")}.
       Flavor: ${interestsArray.join(", ")}.
 
-      PEDAGOGICAL RULES:
-      - No "Circular Questions".
-      - Level 1: Colors/Shapes/Objects.
-      - Level 2: Materials/Sequencing.
-      - Level 3: Inference/Why.
-      - Answers MUST be 1-2 words from the text.
+      PEDAGOGICAL RULES (STRICT):
+      - NO "CIRCULAR QUESTIONS": Do not ask about the main subject of the very first sentence.
+      - LITERAL LOCK: You MUST only ask about a specific noun or adjective that is EXPLICITLY written in the "text" field.
+      - If the text says "shiny blue rocket", you can ask "What color was the rocket?".
+      - If the text DOES NOT mention an "antenna", you are FORBIDDEN from asking about an antenna.
+      - Answers MUST be exactly 1-2 words found in the text.
+      - Identify 1-2 "vocabulary" words from the text and define them simply.
+
+      STRUCTURE:
+      ${isInteractive ? `
+      - Generate ONLY THE FIRST PAGE of an interactive story.
+      - Provide 2-3 "choices" for what happens next.
+      ` : `
+      - Generate exactly 5 pages.
+      `}
 
       JSON STRUCTURE:
       {
@@ -124,7 +135,8 @@ export async function POST(req: Request) {
             "challenge": "Question?",
             "answer": "word",
             "imageDescription": "Pixar scene",
-            "vocabulary": [{"word": "word", "definition": "meaning"}]
+            "vocabulary": [{"word": "word", "definition": "meaning"}]${isInteractive ? `,
+            "choices": [{"text": "Choice 1", "id": "c1"}, {"text": "Choice 2", "id": "c2"}]` : ""}
           }
         ]
       }
@@ -164,10 +176,11 @@ export async function POST(req: Request) {
     try {
       console.log("[GENERATE] Calling Gemini...");
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-      // Try 1.5-flash as a fallback model if 2.0-flash is hitting limits
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      // Use 'gemini-pro' as a highly compatible model name
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
       const result = await model.generateContent(mainPrompt);
       const text = result.response.text();
+      console.log("[GENERATE] Gemini Response Length:", text.length);
       storyData = huntForStory(text);
     } catch (e: any) {
       console.warn("[GENERATE] Gemini Quota/Limit Hit, trying Rescue Fallback...", e.message);

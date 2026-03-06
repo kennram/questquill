@@ -64,6 +64,14 @@ export default async function ProfilePage() {
 
   const totalGems = children?.reduce((acc, curr) => acc + (curr.gems || 0), 0) || 0;
 
+  // 4. Calculate Rank
+  const getRank = (stories: number) => {
+    if (stories >= 25) return "ELITE";
+    if (stories >= 10) return "VETERAN";
+    return "NOVICE";
+  };
+  const currentRank = getRank(totalStories || 0);
+
   return (
     <div className="min-h-screen bg-[#F0F9FF] font-sans pb-20 selection:bg-orange-200">
       

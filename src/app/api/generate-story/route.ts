@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 
 export async function GET() {
   return NextResponse.json({ status: "Magic is active! 🪄" });

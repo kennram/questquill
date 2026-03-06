@@ -1,11 +1,12 @@
 import { createClient } from "@/lib/supabase-server";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 import { notFound } from "next/navigation";
 import AdventureView from "@/components/AdventureView";
 import Link from "next/link";
 import { ChevronLeft, AlertTriangle } from "lucide-react";
+import { cookies } from "next/headers";
 
 export default async function QuestPage({ params }: { params: { id: string } }) {
-  const supabase = await createClient();
   const { id } = await params;
 
   // Handle temporary stories (not saved in DB)
@@ -31,20 +32,28 @@ export default async function QuestPage({ params }: { params: { id: string } }) 
     );
   }
 
-  // Fetch story
-  const { data: story, error } = await supabase
+  // Use Admin client to bypass RLS (Crucial for Student sessions)
+  const { data: story, error } = await supabaseAdmin
     .from("stories")
     .select("*, children(parent_id)")
     .eq("id", id)
     .single();
 
   if (error || !story) {
+    console.error("[QUEST PAGE] Story fetch failed:", error?.message);
     notFound();
   }
 
-  // Fetch parent profile for premium status
+  // Detect role
+  const cookieStore = await cookies();
+  const studentSession = cookieStore.get("student_session");
+  const isStudent = !!studentSession;
+  const role = isStudent ? "student" : "parent"; // or teacher
+  const dashboardPath = isStudent ? "/student/dashboard" : "/dashboard";
+
+  // Fetch parent profile for premium status (via Admin)
   const parentId = (story.children as any)?.parent_id;
-  const { data: profile } = await supabase
+  const { data: profile } = await supabaseAdmin
     .from("profiles")
     .select("is_premium")
     .eq("id", parentId)
@@ -61,14 +70,14 @@ export default async function QuestPage({ params }: { params: { id: string } }) 
   return (
     <div className="min-h-screen bg-sky-50 p-6 md:p-12">
       <Link 
-        href={`/dashboard?childId=${story.child_id}`} 
+        href={`${dashboardPath}?childId=${story.child_id}`} 
         className="inline-flex items-center gap-2 text-sky-600 font-black mb-8 hover:text-sky-800 transition-colors bg-white px-6 py-3 rounded-full shadow-md border-2 border-sky-100 group"
       >
         <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
         Back to Dashboard
       </Link>
 
-      <AdventureView story={storyData} />
+      <AdventureView story={storyData} role={role as any} />
     </div>
   );
 }

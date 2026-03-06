@@ -7,25 +7,25 @@ const FEATURED_STORIES = [
   {
     title: "The Dino's First Flight",
     level: "Level 2 Reading Adventure",
-    image: "https://images.unsplash.com/photo-1512418490979-92798ccc1380?auto=format&fit=crop&q=80&w=800",
+    image: "https://images.unsplash.com/photo-1551103782-8ab07afd45c1?auto=format&fit=crop&q=80&w=800",
     color: "from-sky-900/60"
   },
   {
     title: "Robots in the Magic Forest",
     level: "Level 1 Beginner Quest",
-    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=800",
+    image: "https://images.unsplash.com/photo-1535378917042-10a22c95931a?auto=format&fit=crop&q=80&w=800",
     color: "from-purple-900/60"
   },
   {
     title: "Deep Sea Discovery",
     level: "Level 3 Advanced Exploration",
-    image: "https://images.unsplash.com/photo-1582967788606-a171c1080cb0?auto=format&fit=crop&q=80&w=800",
+    image: "https://images.unsplash.com/photo-1583212292454-1fe6229603b7?auto=format&fit=crop&q=80&w=800",
     color: "from-blue-900/60"
   },
   {
     title: "The Squirrel Space Program",
     level: "Level 2 Intermediate Mission",
-    image: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&q=80&w=800",
+    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=800",
     color: "from-indigo-900/60"
   }
 ];

@@ -83,7 +83,10 @@ export async function POST(req: Request) {
     if (updateError) throw updateError;
 
     // 5. Save discovery
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent("Pixar style 3D render of a " + randomTreasure.name + " magical item, isolated on white background, vibrant colors, high detail")}?width=512&height=512&nologo=true`;
+    const seed = Math.floor(Math.random() * 10000);
+    // Use LoremFlickr (proxies high-quality Unsplash images) for 100% reliability
+    const keywords = `${randomTreasure.name.split(' ').join(',')},magic,treasure`;
+    const imageUrl = `https://loremflickr.com/512/512/${encodeURIComponent(keywords)}?lock=${seed}`;
 
     const { data: discovery, error: discoveryError } = await supabaseAdmin
       .from("map_discoveries")

@@ -121,6 +121,7 @@ export default function AdventureMap({
       {isJournalOpen && (
         <DiscoveryJournal 
           stickers={stickers} 
+          discoveries={discoveries}
           name={name} 
           onClose={() => setIsJournalOpen(false)} 
         />
@@ -242,8 +243,17 @@ export default function AdventureMap({
                 {/* Discovery Artifact Float */}
                 {discovery && (
                   <div className="absolute -top-12 md:-top-20 z-20 animate-float">
-                    <div className="w-12 h-12 md:w-20 md:h-20 rounded-xl md:rounded-2xl bg-white p-0.5 md:p-1 shadow-2xl border-2 md:border-4 border-emerald-400 rotate-6 overflow-hidden transform hover:scale-125 transition-all">
-                      <img src={discovery.image_url} alt={discovery.name} className="w-full h-full object-cover" />
+                    <div className="w-12 h-12 md:w-20 md:h-20 rounded-xl md:rounded-2xl bg-orange-100 p-1 shadow-2xl border-2 md:border-4 border-orange-400 rotate-6 overflow-hidden transform hover:scale-125 transition-all flex items-center justify-center">
+                      <img 
+                        src={discovery.image_url} 
+                        alt={discovery.name} 
+                        className="w-full h-full object-contain drop-shadow-md" 
+                        onError={(e) => {
+                          const seed = Math.floor(Math.random() * 10000);
+                          const keywords = `${discovery.name.split(' ').join(',')},magic,treasure`;
+                          (e.target as HTMLImageElement).src = `https://loremflickr.com/512/512/${encodeURIComponent(keywords)}?lock=${seed}`;
+                        }}
+                      />
                     </div>
                   </div>
                 )}

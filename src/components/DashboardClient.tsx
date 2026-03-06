@@ -282,12 +282,14 @@ export default function DashboardClient({
             <div className="flex items-center gap-3 md:gap-6 animate-in slide-in-from-left duration-500 w-full md:w-auto">
               {selectedChildId ? (
                 <div className="flex items-center gap-3 md:gap-6">
-                  <button 
-                    onClick={() => { setSelectedChildId(null); setActiveTab("world"); }}
-                    className="p-2.5 md:p-4 bg-white text-sky-600 rounded-xl md:rounded-3xl shadow-xl hover:bg-sky-50 transition-all group border-2 md:border-4 border-white"
-                  >
-                    <ChevronDown className="w-5 h-5 md:w-8 md:h-8 rotate-90 group-hover:-translate-x-1 transition-transform" />
-                  </button>
+                  {role !== "student" && (
+                    <button 
+                      onClick={handleDeselectChild}
+                      className="p-2.5 md:p-4 bg-white text-sky-600 rounded-xl md:rounded-3xl shadow-xl hover:bg-sky-50 transition-all group border-2 md:border-4 border-white"
+                    >
+                      <ChevronDown className="w-5 h-5 md:w-8 md:h-8 rotate-90 group-hover:-translate-x-1 transition-transform" />
+                    </button>
+                  )}
                   <div className="flex items-center gap-3 md:gap-4">
                     <div className="w-12 h-12 md:w-20 md:h-20 rounded-xl md:rounded-[32px] bg-orange-100 border-2 md:border-4 border-white shadow-2xl overflow-hidden shrink-0">
                       {activeChild?.avatar_url ? (
@@ -337,67 +339,63 @@ export default function DashboardClient({
               )}
 
               {/* Lobby Tools (Lobby only) */}
-              {!selectedChildId && (
+              {!selectedChildId && role !== "student" && (
                 <div className="flex items-center gap-2 md:gap-4 bg-white/50 backdrop-blur-md p-1.5 md:p-2 rounded-2xl md:rounded-[32px] border-2 border-white shadow-xl">
-                  {role !== "student" && (
-                    <div className="flex items-center gap-1 bg-sky-100/50 p-1 rounded-full">
+                  <div className="flex items-center gap-1 bg-sky-100/50 p-1 rounded-full">
+                    <button
+                      onClick={() => setActiveTab("world")}
+                      className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-6 py-2 md:py-3 rounded-full font-black text-[10px] md:text-sm transition-all ${activeTab === 'world' ? 'bg-sky-500 text-white shadow-lg' : 'text-sky-600 hover:bg-sky-100'}`}
+                    >
+                      <LayoutGrid className="w-3 h-3 md:w-4 md:h-4" /> <span className="hidden xs:inline">{role === "teacher" ? "Students" : "Explorers"}</span>
+                    </button>
+                    {role === "parent" && (
                       <button
-                        onClick={() => setActiveTab("world")}
-                        className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-6 py-2 md:py-3 rounded-full font-black text-[10px] md:text-sm transition-all ${activeTab === 'world' ? 'bg-sky-500 text-white shadow-lg' : 'text-sky-600 hover:bg-sky-100'}`}
+                        onClick={() => setActiveTab("missions")}
+                        className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-6 py-2 md:py-3 rounded-full font-black text-[10px] md:text-sm transition-all ${activeTab === 'missions' ? 'bg-orange-500 text-white shadow-lg' : 'text-orange-600 hover:bg-orange-100'}`}
                       >
-                        <LayoutGrid className="w-3 h-3 md:w-4 md:h-4" /> <span className="hidden xs:inline">{role === "teacher" ? "Students" : "Explorers"}</span>
+                        <Target className="w-3 h-3 md:w-4 md:h-4" /> <span className="hidden xs:inline">Quests</span>
                       </button>
-                      {role === "parent" && (
-                        <button
-                          onClick={() => setActiveTab("missions")}
-                          className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-6 py-2 md:py-3 rounded-full font-black text-[10px] md:text-sm transition-all ${activeTab === 'missions' ? 'bg-orange-500 text-white shadow-lg' : 'text-orange-600 hover:bg-orange-100'}`}
-                        >
-                          <Target className="w-3 h-3 md:w-4 md:h-4" /> <span className="hidden xs:inline">Quests</span>
-                        </button>
-                      )}
-                      {role === "teacher" && (
-                        <button
-                          onClick={() => setActiveTab("analytics")}
-                          className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-6 py-2 md:py-3 rounded-full font-black text-[10px] md:text-sm transition-all ${activeTab === 'analytics' ? 'bg-purple-600 text-white shadow-lg' : 'text-purple-600 hover:bg-purple-100'}`}
-                        >
-                          <BarChart3 className="w-3 h-3 md:w-4 md:h-4" /> <span className="hidden xs:inline">Insights</span>
-                        </button>
-                      )}
-                    </div>
-                  )}
+                    )}
+                    {role === "teacher" && (
+                      <button
+                        onClick={() => setActiveTab("analytics")}
+                        className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-6 py-2 md:py-3 rounded-full font-black text-[10px] md:text-sm transition-all ${activeTab === 'analytics' ? 'bg-purple-600 text-white shadow-lg' : 'text-purple-600 hover:bg-purple-100'}`}
+                      >
+                        <BarChart3 className="w-3 h-3 md:w-4 md:h-4" /> <span className="hidden xs:inline">Insights</span>
+                      </button>
+                    )}
+                  </div>
 
-                  {role !== "student" && (
-                    <div className="relative">
-                      <button
-                        onClick={() => setIsManageOpen(!isManageOpen)}
-                        className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 md:py-3 bg-white text-sky-600 font-black rounded-full border-2 border-sky-100 hover:border-sky-300 transition-all text-[10px] md:text-sm ${isManageOpen ? 'bg-sky-50' : ''}`}
-                      >
-                        <Settings className="w-3 h-3 md:w-4 md:h-4" /> <span className="hidden sm:inline">Manage</span>
-                      </button>
-                      
-                      {isManageOpen && (
-                        <>
-                          <div className="fixed inset-0 z-[70]" onClick={() => setIsManageOpen(false)} />
-                          <div className="absolute right-0 mt-2 w-48 md:w-56 bg-white rounded-2xl md:rounded-[24px] shadow-2xl border-4 border-sky-50 p-1.5 md:p-2 z-[80] animate-in slide-in-from-top-2">
+                  <div className="relative">
+                    <button
+                      onClick={() => setIsManageOpen(!isManageOpen)}
+                      className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 md:py-3 bg-white text-sky-600 font-black rounded-full border-2 border-sky-100 hover:border-sky-300 transition-all text-[10px] md:text-sm ${isManageOpen ? 'bg-sky-50' : ''}`}
+                    >
+                      <Settings className="w-3 h-3 md:w-4 md:h-4" /> <span className="hidden sm:inline">Manage</span>
+                    </button>
+                    
+                    {isManageOpen && (
+                      <>
+                        <div className="fixed inset-0 z-[70]" onClick={() => setIsManageOpen(false)} />
+                        <div className="absolute right-0 mt-2 w-48 md:w-56 bg-white rounded-2xl md:rounded-[24px] shadow-2xl border-4 border-sky-50 p-1.5 md:p-2 z-[80] animate-in slide-in-from-top-2">
+                          <button
+                            onClick={() => { setIsAddChildOpen(true); setIsManageOpen(false); }}
+                            className="w-full flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 hover:bg-sky-50 rounded-xl text-sky-900 font-bold transition-colors text-left text-xs md:text-base"
+                          >
+                            <Plus className="w-3.5 h-3.5 md:w-4 md:h-4 text-sky-500" /> Add Student
+                          </button>
+                          {role === "teacher" && (
                             <button
-                              onClick={() => { setIsAddChildOpen(true); setIsManageOpen(false); }}
+                              onClick={() => { setIsBulkAddOpen(true); setIsManageOpen(false); }}
                               className="w-full flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 hover:bg-sky-50 rounded-xl text-sky-900 font-bold transition-colors text-left text-xs md:text-base"
                             >
-                              <Plus className="w-3.5 h-3.5 md:w-4 md:h-4 text-sky-500" /> Add Student
+                              <ListPlus className="w-3.5 h-3.5 md:w-4 md:h-4 text-purple-500" /> Bulk Import
                             </button>
-                            {role === "teacher" && (
-                              <button
-                                onClick={() => { setIsBulkAddOpen(true); setIsManageOpen(false); }}
-                                className="w-full flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 hover:bg-sky-50 rounded-xl text-sky-900 font-bold transition-colors text-left text-xs md:text-base"
-                              >
-                                <ListPlus className="w-3.5 h-3.5 md:w-4 md:h-4 text-purple-500" /> Bulk Import
-                              </button>
-                            )}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  )}
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -559,7 +557,7 @@ export default function DashboardClient({
                     <span className={`text-[6px] md:text-sm font-black uppercase tracking-widest opacity-80 hidden sm:block ${activeTab === 'world' ? 'text-sky-100' : 'text-sky-300'}`}>Kingdom</span>
                   </div>
                 </button>
-                <button onClick={() => setActiveTab("words")} className={`flex flex-col items-center justify-center gap-1 md:gap-3 px-3 py-3 md:px-12 md:py-10 rounded-xl md:rounded-[40px] font-black transition-all border-b-[4px] md:border-b-[12px] active:border-b-0 active:translate-y-1 md:active:translate-y-3 flex-1 min-w-0 group ${activeTab === 'words' ? 'bg-purple-500 text-white border-purple-700 shadow-2xl scale-105' : 'bg-white text-purple-400 border-purple-100 hover:bg-purple-50 hover:text-purple-600'}`}>
+                <button onClick={() => setActiveTab("words")} className={`flex flex-col items-center justify-center gap-1 md:gap-3 px-3 py-3 md:px-12 md:py-10 rounded-xl md:rounded-[40px] font-black transition-all border-b-[4px] md:border-b-[12px] active:border-b-0 active:translate-y-1 md:active:translate-y-3 flex-1 min-w-0 group ${activeTab === 'words' ? 'bg-purple-500 text-white border-purple-700 shadow-2xl scale-105' : 'bg-white text-purple-400 border-purple-100 hover:bg-sky-50 hover:text-purple-600'}`}>
                   <BookOpen className={`w-5 h-5 md:w-12 md:h-12 transition-transform group-hover:scale-110 ${activeTab === 'words' ? 'text-white' : 'text-purple-400'}`} /> 
                   <div className="flex flex-col items-center">
                     <span className="text-xs md:text-4xl font-comic">Words</span>

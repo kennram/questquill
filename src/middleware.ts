@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server'
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  const studentSession = request.cookies.get('student_session')
+  const studentSession = request.cookies.get('student_session')?.value
 
   let response = NextResponse.next({
     request: {
@@ -38,16 +38,12 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   // 1. Block students (cookie only) from Teacher Dashboard
+  // If they have a student session but NO Supabase user, force them to student dashboard
   if (pathname.startsWith('/dashboard') && studentSession && !user) {
     return NextResponse.redirect(new URL('/student/dashboard', request.url))
   }
 
-  // 2. Block teachers (Supabase user) from Student Dashboard to avoid bleed
-  if (pathname.startsWith('/student/dashboard') && user) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
-  }
-
-  // 3. Redirect completely unauthenticated users to login
+  // 2. Redirect completely unauthenticated users to login
   if (!user && !studentSession && (pathname.startsWith('/dashboard') || pathname.startsWith('/student/dashboard'))) {
     return NextResponse.redirect(new URL('/login', request.url))
   }

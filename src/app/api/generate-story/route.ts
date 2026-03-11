@@ -53,13 +53,17 @@ const RESCUE_STORY = {
 
 export async function POST(req: Request) {
   const startTime = Date.now();
+  let teacherId: string | null = null;
+  let childId: string | null = null;
+  
   console.log("[GENERATE] --- NEW REQUEST ---");
   
   try {
     const body = await req.json().catch(() => null);
     if (!body) return NextResponse.json({ error: "No JSON body" }, { status: 400 });
 
-    const { interests, name, level, childId, mode, isTest, classMission } = body;
+    const { interests, name, level, mode, isTest, classMission } = body;
+    childId = body.childId;
     console.log(`[GENERATE] Child: ${childId}, Name: ${name}, Level: ${level}`);
 
     // 1. Auth Check
@@ -67,7 +71,7 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     
     let isAuthorized = !!user;
-    let teacherId = user?.id;
+    teacherId = user?.id || null;
 
     if (!isAuthorized) {
       const cookieStore = await cookies();

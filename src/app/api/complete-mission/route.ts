@@ -60,6 +60,16 @@ export async function POST(req: Request) {
         console.error("COMPLETE MISSION DB ERROR:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
+
+      // Log the activity
+      await supabaseAdmin.from("activity_logs").insert({
+        user_id: user?.id || null,
+        event_type: 'mission_completed',
+        metadata: { 
+          child_id: childId,
+          mission_text: trimmedMission
+        }
+      });
     }
 
     revalidatePath("/dashboard");

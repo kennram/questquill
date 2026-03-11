@@ -70,6 +70,20 @@ export async function POST(req: Request) {
       })
       .eq("id", childId);
 
+    // Log the activity
+    const { data: { user } } = await supabase.auth.getUser();
+    await supabase.from("activity_logs").insert({
+      user_id: user?.id || null,
+      event_type: 'sticker_claimed',
+      metadata: { 
+        child_id: childId,
+        story_id: storyId,
+        sticker_id: inserted.id,
+        gems_earned: 10,
+        new_level: newLevel
+      }
+    });
+
     console.log(`PROGRESS UPDATED: Child=${childId}, Level=${newLevel}, Gems=${currentGems + 10}`);
 
     return NextResponse.json({ 

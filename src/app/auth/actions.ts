@@ -56,7 +56,7 @@ export async function login(formData: FormData) {
 
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
@@ -65,8 +65,16 @@ export async function login(formData: FormData) {
     return { error: error.message };
   }
 
+  // Log the login activity
+  if (data.user) {
+    await supabase.from("activity_logs").insert({
+      user_id: data.user.id,
+      event_type: 'login'
+    });
+  }
+
   redirect("/dashboard");
-}
+  }
 
 export async function signOut() {
   const supabase = await createClient();

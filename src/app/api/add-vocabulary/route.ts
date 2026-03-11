@@ -50,6 +50,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    // Log the activity
+    await supabaseAdmin.from("activity_logs").insert({
+      user_id: user?.id || null, // Might be null for student sessions, which is fine
+      event_type: 'vocabulary_added',
+      metadata: { 
+        child_id: childId,
+        word: word.toLowerCase().trim(),
+        story_id: storyId
+      }
+    });
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("VOCAB API ERROR:", error);

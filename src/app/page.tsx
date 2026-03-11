@@ -30,7 +30,11 @@ export default function LandingPage() {
             Personalized AI reading quests that adapt to every learner. From bedtime adventures to classroom literacy goals, QuestQuill turns curiosity into mastery.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center lg:justify-start">
-            <Link href="/signup" className="w-full sm:w-auto px-8 md:px-12 py-5 md:py-6 bg-orange-500 text-white font-black text-xl md:text-3xl rounded-[24px] md:rounded-[32px] shadow-[0_8px_0_rgb(194,65,12)] md:shadow-[0_10px_0_rgb(194,65,12)] hover:shadow-[0_4px_0_rgb(194,65,12)] hover:translate-y-[4px] active:shadow-none active:translate-y-[8px] transition-all flex items-center justify-center gap-3 group text-center">
+            <Link 
+              href="/signup" 
+              onClick={() => window.logQuestEvent?.('conversion_intent', { button: 'Hero Start Adventure' })}
+              className="w-full sm:w-auto px-8 md:px-12 py-5 md:py-6 bg-orange-500 text-white font-black text-xl md:text-3xl rounded-[24px] md:rounded-[32px] shadow-[0_8px_0_rgb(194,65,12)] md:shadow-[0_10px_0_rgb(194,65,12)] hover:shadow-[0_4px_0_rgb(194,65,12)] hover:translate-y-[4px] active:shadow-none active:translate-y-[8px] transition-all flex items-center justify-center gap-3 group text-center"
+            >
               Start Your Quest <Sparkles className="w-6 h-6 md:w-8 md:h-8 group-hover:rotate-12 transition-transform" />
             </Link>
           </div>

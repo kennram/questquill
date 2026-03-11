@@ -52,6 +52,7 @@ const RESCUE_STORY = {
 };
 
 export async function POST(req: Request) {
+  const startTime = Date.now();
   console.log("[GENERATE] --- NEW REQUEST ---");
   
   try {
@@ -101,6 +102,7 @@ export async function POST(req: Request) {
 
     // 3. Generation
     let storyData: any = null;
+    let aiProvider = "gemini";
     const interestsArray = Array.isArray(interests) ? interests : interests ? [interests] : ["magic", "adventure"];
     const isInteractive = mode === "interactive";
     
@@ -185,6 +187,7 @@ export async function POST(req: Request) {
       storyData = huntForStory(text);
     } catch (e: any) {
       console.warn("[GENERATE] Gemini Quota/Limit Hit, trying Rescue Fallback...", e.message);
+      aiProvider = "pollinations-ai";
       try {
         const res = await fetch("https://text.pollinations.ai/", {
           method: "POST",
@@ -208,6 +211,7 @@ export async function POST(req: Request) {
     // FINAL RESCUE: If all AI fail, use the pre-written Sparky story
     if (!storyData || !storyData.pages) {
       console.warn("[GENERATE] ALL AI SERVICES FAILED. Deploying Rescue Story.");
+      aiProvider = "local-rescue";
       storyData = RESCUE_STORY;
     }
 
@@ -223,6 +227,24 @@ export async function POST(req: Request) {
 
     if (dbError) throw new Error(`DB Save Failed: ${dbError.message}`);
 
+    const durationMs = Date.now() - startTime;
+
+    // Log the activity
+    await supabaseAdmin.from("activity_logs").insert({
+      user_id: teacherId,
+      event_type: 'story_generated',
+      metadata: { 
+        story_id: savedStory.id, 
+        is_premium: !!profile.is_premium,
+        child_id: childId,
+        interests: interestsArray,
+        level: level,
+        mode: mode,
+        ai_provider: aiProvider,
+        duration_ms: durationMs
+      }
+    });
+
     if (!isTest) {
       await supabaseAdmin.from("profiles").update({ 
         story_count_monthly: storyCount + 1,
@@ -235,6 +257,17 @@ export async function POST(req: Request) {
 
   } catch (error: any) {
     console.error("[GENERATE] CRITICAL:", error);
+    const durationMs = Date.now() - startTime;
+    // Log the error
+    await supabaseAdmin.from("activity_logs").insert({
+      user_id: teacherId,
+      event_type: 'story_generation_failed',
+      metadata: { 
+        error: error.message || "Magic failed",
+        duration_ms: durationMs,
+        child_id: childId
+      }
+    });
     return NextResponse.json({ error: error.message || "Magic failed" }, { status: 500 });
   }
 }

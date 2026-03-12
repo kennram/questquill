@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { ChevronRight, ChevronLeft, Sparkles, Loader2, CheckCircle2, PartyPopper, Home, ImageOff, Volume2, VolumeX, Ghost, BookMarked, Trophy, Gem, ArrowRight, Crown, Star, Zap, X, Wand2, Lightbulb } from "lucide-react";
+import { ChevronRight, ChevronLeft, Sparkles, Loader2, CheckCircle2, PartyPopper, Home, ImageOff, Volume2, VolumeX, Ghost, BookMarked, Trophy, Gem, ArrowRight, Crown, Star, Zap, X, Wand2, Lightbulb, Lock as LockIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { logChallengeAttempt } from "@/app/dashboard/actions";
 
@@ -372,7 +372,7 @@ export default function AdventureView({ story, classMission = null, role = "pare
               className={`p-2.5 md:p-6 rounded-xl md:rounded-[32px] shadow-2xl border-2 md:border-4 transition-all hover:scale-110 active:scale-95 flex items-center gap-2
                 ${isSpeaking ? 'bg-orange-500 text-white border-orange-200 animate-pulse' : 'bg-white/90 text-sky-500 border-white'}`}
             >
-              {isSpeaking ? <VolumeX className="w-4 h-4 md:w-8 md:h-8" /> : (story.is_premium ? <Volume2 className="w-4 h-4 md:w-8 md:h-8" /> : <Lock className="w-4 h-4 md:w-8 md:h-8 text-slate-300" />)}
+              {isSpeaking ? <VolumeX className="w-4 h-4 md:w-8 md:h-8" /> : (story.is_premium ? <Volume2 className="w-4 h-4 md:w-8 md:h-8" /> : <LockIcon className="w-4 h-4 md:w-8 md:h-8 text-slate-300" />)}
               <span className="font-black uppercase tracking-widest text-[10px] md:text-xs hidden sm:block">
                 {isSpeaking ? 'Listening...' : (story.is_premium ? 'Read to Me' : 'Cinematic Voice')}
               </span>

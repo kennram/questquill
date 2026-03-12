@@ -31,7 +31,7 @@ import {
   Plus,
   Target,
   Crown,
-  Lock
+  Lock as LockIcon
 } from "lucide-react";
 import { addClassMission, deleteClassMission, generateClassCode, resetStudentMission } from "@/app/dashboard/actions";
 import Link from "next/link";
@@ -420,7 +420,7 @@ export default function TeacherAnalytics({
               }}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all border-2 text-[10px] md:text-xs font-black uppercase tracking-widest ${compareMode ? 'bg-orange-500 border-orange-400 text-white' : 'bg-white/10 border-transparent text-white/60 hover:text-white hover:bg-white/20'}`}
             >
-              {!isPremium && <Lock className="w-3.5 h-3.5" />}
+              {!isPremium && <LockIcon className="w-3.5 h-3.5" />}
               {isPremium ? (compareMode ? 'Cancel' : 'Compare Growth') : 'Compare Growth'}
             </button>
           </div>
@@ -595,7 +595,7 @@ export default function TeacherAnalytics({
                     <td className="px-4 md:px-10 py-4 md:py-8 whitespace-nowrap">
                       {!isPremium ? (
                         <div className="flex items-center gap-1.5 text-slate-300 italic text-[10px] font-bold">
-                          <Lock className="w-3 h-3" /> Locked
+                          <LockIcon className="w-3 h-3" /> Locked
                         </div>
                       ) : student.struggles.length > 0 ? (
                         <div className="flex flex-wrap gap-1 md:gap-2">
@@ -681,7 +681,7 @@ export default function TeacherAnalytics({
           
           <div className="relative z-10">
             <div className="inline-flex items-center gap-2 bg-orange-500 text-white px-3 py-1 md:px-4 md:py-1.5 rounded-full font-black uppercase text-[8px] md:text-[10px] tracking-widest mb-4 md:mb-6 shadow-lg">
-              {isPremium ? <Sparkles className="w-3 h-3 md:w-3.5 md:h-3.5" /> : <Lock className="w-3 h-3" />}
+              {isPremium ? <Sparkles className="w-3 h-3 md:w-3.5 md:h-3.5" /> : <LockIcon className="w-3 h-3" />}
               <span className="hidden xs:inline">Teacher AI Advisor</span><span className="xs:hidden">Advisor</span>
             </div>
             

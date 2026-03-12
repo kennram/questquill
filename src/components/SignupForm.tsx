@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { signUp } from "@/app/auth/actions";
-import { Users, School, Mail, Lock, User as UserIcon, Sparkles, Loader2, CheckCircle2 } from "lucide-react";
+import { Users, School, Mail, Lock as LockIcon, User as UserIcon, Sparkles, Loader2, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 
 export default function SignupForm() {
@@ -149,7 +149,7 @@ export default function SignupForm() {
 
             <div className="space-y-1.5 md:space-y-2">
               <label className="flex items-center gap-2 text-sky-700 font-black uppercase tracking-widest text-[10px] md:text-xs ml-2">
-                <Lock className="w-3.5 h-3.5 md:w-4 md:h-4" /> Secret Password
+                <LockIcon className="w-3.5 h-3.5 md:w-4 md:h-4" /> Secret Password
               </label>
               <input
                 name="password"

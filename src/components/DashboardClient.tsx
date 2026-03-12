@@ -81,7 +81,9 @@ export default function DashboardClient({
   classMissions = [],
   classCode = null,
   role = "parent",
-  isPremium = false
+  isPremium = false,
+  storyCountMonthly = 0,
+  lastLimitReset = new Date().toISOString()
 }: { 
   children: Child[], 
   stories: Story[],
@@ -93,7 +95,9 @@ export default function DashboardClient({
   classMissions?: string[],
   classCode?: string | null,
   role?: "parent" | "teacher" | "student",
-  isPremium?: boolean
+  isPremium?: boolean,
+  storyCountMonthly?: number,
+  lastLimitReset?: string
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -696,6 +700,9 @@ export default function DashboardClient({
           classMissions={classMissions}
           role={role}
           initialMission={preSelectedMission}
+          storyCountMonthly={storyCountMonthly}
+          lastLimitReset={lastLimitReset}
+          isPremium={isPremium}
         />
       )}
 

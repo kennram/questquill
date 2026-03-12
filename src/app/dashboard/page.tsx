@@ -146,6 +146,8 @@ export default async function DashboardPage({
           classCode={classCode}
           role={role as "parent" | "teacher" | "student"}
           isPremium={!!profile?.is_premium}
+          storyCountMonthly={profile?.story_count_monthly || 0}
+          lastLimitReset={profile?.last_limit_reset || new Date().toISOString()}
         />
       </main>
 

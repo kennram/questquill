@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { X, Sparkles, Loader2, Book, Star, Zap, Users, CheckCircle2, Target, ChevronRight } from "lucide-react";
+import { X, Sparkles, Loader2, Book, Star, Zap, Users, CheckCircle2, Target, ChevronRight, Crown } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface Child {
   id: string;
@@ -25,6 +26,9 @@ interface QuestWizardProps {
   classMissions?: string[];
   role?: "parent" | "teacher" | "student";
   initialMission?: string | null;
+  storyCountMonthly?: number;
+  lastLimitReset?: string;
+  isPremium?: boolean;
 }
 
 export default function QuestWizard({ 
@@ -34,7 +38,10 @@ export default function QuestWizard({
   classMission,
   classMissions = [],
   role = "parent",
-  initialMission = null
+  initialMission = null,
+  storyCountMonthly = 0,
+  lastLimitReset = new Date().toISOString(),
+  isPremium = false
 }: QuestWizardProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -47,6 +54,13 @@ export default function QuestWizard({
     "Mixing in the magic...",
     "Almost ready for adventure!"
   ];
+
+  // Calculate if limit reached
+  const now = new Date();
+  const lastReset = new Date(lastLimitReset);
+  const isNewMonth = (now.getUTCMonth() !== lastReset.getUTCMonth()) || (now.getUTCFullYear() !== lastReset.getUTCFullYear());
+  const currentCount = isNewMonth ? 0 : storyCountMonthly;
+  const isLimitReached = !isPremium && currentCount >= 3;
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -134,6 +148,11 @@ export default function QuestWizard({
       return;
     }
 
+    if (isLimitReached) {
+      setError({ message: "You've reached your monthly story limit. Go Legendary for unlimited magic!", limitReached: true });
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -196,8 +215,23 @@ export default function QuestWizard({
 
         <div className="p-6 md:p-10 space-y-6 md:y-8 overflow-y-auto custom-scrollbar flex-grow">
           {error && (
-            <div className={`p-4 md:p-6 rounded-2xl md:rounded-[32px] border-4 ${error.limitReached ? "bg-orange-50 border-orange-200" : "bg-red-50 border-red-100"}`}>
-              <p className="font-black text-red-600 text-sm md:text-base">{error.message}</p>
+            <div className={`p-4 md:p-6 rounded-2xl md:rounded-[32px] border-4 flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 shadow-sm ${error.limitReached ? 'bg-orange-50 border-orange-200' : 'bg-red-50 border-red-100'}`}>
+              <div className="flex items-start gap-4">
+                <div className={`p-2 rounded-xl shrink-0 ${error.limitReached ? 'bg-orange-500 text-white' : 'bg-red-500 text-white'}`}>
+                  {error.limitReached ? <Crown className="w-5 h-5" /> : <X className="w-5 h-5" />}
+                </div>
+                <div className="flex-grow">
+                  <p className={`font-black leading-tight text-sm md:text-base ${error.limitReached ? 'text-orange-700' : 'text-red-600'}`}>{error.message}</p>
+                </div>
+              </div>
+              {error.limitReached && (
+                <Link
+                  href="/dashboard/upgrade"
+                  className="w-full py-4 bg-orange-500 text-white font-black text-center rounded-2xl shadow-lg border-b-4 border-orange-700 hover:bg-orange-600 active:translate-y-1 active:border-b-0 transition-all flex items-center justify-center gap-2"
+                >
+                  <Crown className="w-5 h-5" /> Go Legendary Now!
+                </Link>
+              )}
             </div>
           )}
 
@@ -292,7 +326,7 @@ export default function QuestWizard({
               disabled={loading || !formData.childId}
               className="w-full py-5 md:py-6 bg-orange-500 text-white font-black text-2xl md:text-3xl rounded-2xl md:rounded-[32px] shadow-xl border-b-[6px] md:border-b-[10px] border-orange-700 active:translate-y-1 active:border-b-0 disabled:opacity-50 disabled:grayscale transition-all"
             >
-              Create Magic!
+              {isLimitReached ? "Go Legendary" : "Create Magic!"}
             </button>
           </div>
         </div>

@@ -449,6 +449,7 @@ export default function DashboardClient({
                 classMission={classMission}
                 classMissions={classMissions}
                 classCode={classCode}
+                isPremium={isPremium}
                 onSelectStudent={(id) => router.push(`/dashboard?childId=${id}`)}
               />
             ) : activeTab === "missions" ? (

@@ -362,12 +362,21 @@ export default function AdventureView({ story, classMission = null, role = "pare
           {/* Narration Button */}
           <div className="absolute top-3 right-3 md:top-8 md:right-8 flex flex-col items-end gap-3 z-10">
             <button 
-              onClick={isSpeaking ? stopSpeaking : speak} 
+              onClick={() => {
+                if (story.is_premium) {
+                  isSpeaking ? stopSpeaking() : speak();
+                } else {
+                  router.push("/dashboard/upgrade");
+                }
+              }} 
               className={`p-2.5 md:p-6 rounded-xl md:rounded-[32px] shadow-2xl border-2 md:border-4 transition-all hover:scale-110 active:scale-95 flex items-center gap-2
                 ${isSpeaking ? 'bg-orange-500 text-white border-orange-200 animate-pulse' : 'bg-white/90 text-sky-500 border-white'}`}
             >
-              {isSpeaking ? <VolumeX className="w-4 h-4 md:w-8 md:h-8" /> : <Volume2 className="w-4 h-4 md:w-8 md:h-8" />}
-              <span className="font-black uppercase tracking-widest text-[10px] md:text-xs hidden sm:block">{isSpeaking ? 'Listening...' : 'Read to Me'}</span>
+              {isSpeaking ? <VolumeX className="w-4 h-4 md:w-8 md:h-8" /> : (story.is_premium ? <Volume2 className="w-4 h-4 md:w-8 md:h-8" /> : <Lock className="w-4 h-4 md:w-8 md:h-8 text-slate-300" />)}
+              <span className="font-black uppercase tracking-widest text-[10px] md:text-xs hidden sm:block">
+                {isSpeaking ? 'Listening...' : (story.is_premium ? 'Read to Me' : 'Cinematic Voice')}
+              </span>
+              {!story.is_premium && !isSpeaking && <Crown className="w-3 h-3 text-orange-400 fill-orange-400 absolute -top-1 -right-1 md:-top-2 md:-right-2 rotate-12" />}
             </button>
           </div>
 

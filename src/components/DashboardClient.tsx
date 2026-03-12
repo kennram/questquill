@@ -287,9 +287,11 @@ export default function DashboardClient({
                   {role !== "student" && (
                     <button 
                       onClick={handleDeselectChild}
-                      className="p-2.5 md:p-4 bg-white text-sky-600 rounded-xl md:rounded-3xl shadow-xl hover:bg-sky-50 transition-all group border-2 md:border-4 border-white"
+                      className="flex items-center gap-2 p-2.5 md:pl-4 md:pr-6 md:py-4 bg-white text-sky-600 rounded-xl md:rounded-3xl shadow-xl hover:bg-sky-50 transition-all group border-2 md:border-4 border-white"
+                      title="Back to Hub"
                     >
-                      <ChevronDown className="w-5 h-5 md:w-8 md:h-8 rotate-90 group-hover:-translate-x-1 transition-transform" />
+                      <ChevronLeft className="w-5 h-5 md:w-8 md:h-8 group-hover:-translate-x-1 transition-transform" />
+                      <span className="hidden md:inline font-black uppercase text-xs tracking-wider">Back to Hub</span>
                     </button>
                   )}
                   <div className="flex items-center gap-3 md:gap-4">

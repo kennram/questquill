@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Plus, Sparkles, User, BookOpen, Settings, Check, Map as MapIcon, ChevronDown, UserCircle, Crown, BarChart3, Users, ListPlus, X, ChevronRight, Scroll, LogOut, MoreHorizontal, LayoutGrid, Layout, Gem, Target, History, Home, Trash2, Loader2 } from "lucide-react";
+import { Plus, Sparkles, BookOpen, Settings, Check, Map as MapIcon, ChevronLeft, UserCircle, BarChart3, ListPlus, X, ChevronRight, Scroll, LogOut, LayoutGrid, Gem, Target, History, Home, Trash2, Loader2 } from "lucide-react";
 import QuestWizard from "@/components/QuestWizard";
 import AdventureView from "@/components/AdventureView";
 import AddChildModal from "@/components/AddChildModal";
@@ -12,7 +12,6 @@ import StoryLibrary from "@/components/StoryLibrary";
 import WordBank from "@/components/WordBank";
 import AdventureMap from "@/components/AdventureMap";
 import TeacherAnalytics from "@/components/TeacherAnalytics";
-import Link from "next/link";
 import { addIndividualMission, deleteIndividualMission } from "@/app/dashboard/actions";
 
 interface Child {
@@ -100,7 +99,6 @@ export default function DashboardClient({
   const router = useRouter();
   const urlChildId = searchParams.get("childId");
   const checkoutSuccess = searchParams.get("success");
-  const checkoutCanceled = searchParams.get("canceled");
 
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [isAddChildOpen, setIsAddChildOpen] = useState(false);
@@ -108,10 +106,15 @@ export default function DashboardClient({
   const [isManageOpen, setIsManageOpen] = useState(false);
   const [isQuestLogOpen, setIsQuestLogOpen] = useState(false);
   const [editingChild, setEditingChild] = useState<Child | null>(null);
-  const [selectedChildId, setSelectedChildId] = useState<string | null>(
-    (role === "student" && children.length === 1) ? children[0].id : null
-  );
-  const [loading, setLoading] = useState(false);
+  
+  // DERIVE selectedChildId from URL - Strictly Source of Truth
+  const selectedChildId = useMemo(() => {
+    if (role === "student" && children.length === 1) return children[0].id;
+    if (urlChildId && children.some(c => c.id === urlChildId)) return urlChildId;
+    return null;
+  }, [urlChildId, children, role]);
+
+  const [loading] = useState(false);
   const [story, setStory] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<"world" | "words" | "stories" | "analytics" | "missions">("world");
 
@@ -120,21 +123,18 @@ export default function DashboardClient({
   const [isAddingFamilyMission, setIsAddingFamilyMission] = useState<{ [key: string]: boolean }>({});
   const [preSelectedMission, setPreSelectedMission] = useState<string | null>(null);
 
-  // Auto-select child if there's only one (Student Mode)
-  useEffect(() => {
-    if (role === "student" && children.length === 1 && !selectedChildId) {
-      setSelectedChildId(children[0].id);
+  // Explicit Lobby Navigation (Forces Hard Reset to /dashboard)
+  const goToLobby = () => {
+    if (role === "student") {
+      setStory(null);
+      setActiveTab("world");
+      router.push("/dashboard");
+      return;
     }
-  }, [role, children, selectedChildId]);
-
-  // Security: Prevent students from leaving their profile
-  const handleDeselectChild = () => {
-    if (role === "student") return;
-    setSelectedChildId(null);
-    setActiveTab("world");
-    // Clear URL parameter to prevent auto-selection on refresh
-    router.replace('/dashboard');
+    window.location.href = "/dashboard";
   };
+
+  const handleDeselectChild = goToLobby;
 
   // Handle mission completion masking
   const handleMissionFinish = (mission: string) => {
@@ -165,13 +165,6 @@ export default function DashboardClient({
       if (res.success) router.refresh();
     } catch (err) {}
   };
-
-  // Sync selectedChildId with URL param if it exists
-  useEffect(() => {
-    if (urlChildId && children.some(c => c.id === urlChildId) && role !== "student") {
-      setSelectedChildId(urlChildId);
-    }
-  }, [urlChildId, children, role]);
 
   // --- FILTERED DATA ---
   const filteredStories = useMemo(() => {
@@ -237,12 +230,31 @@ export default function DashboardClient({
   if (story) {
     return (
       <div className="min-h-screen bg-sky-50 p-4 md:p-8">
-        <button 
-          onClick={() => setStory(null)}
-          className="mb-6 md:mb-8 text-sky-600 font-bold flex items-center gap-2 hover:underline transition-all hover:-translate-x-1"
-        >
-          ← Back to Map
-        </button>
+        <div className="max-w-5xl mx-auto mb-6 md:mb-8 flex justify-between items-center bg-white/50 p-4 rounded-3xl border-2 border-white shadow-sm">
+          <button 
+            onClick={() => {
+              if (role === "student") {
+                setStory(null);
+                setActiveTab("world");
+                router.push("/student/dashboard");
+              } else {
+                window.location.href = `/dashboard?childId=${selectedChildId}`;
+              }
+            }}
+            className="text-sky-600 font-black flex items-center gap-2 hover:bg-white px-4 py-2 rounded-xl transition-all"
+          >
+            <ChevronLeft className="w-5 h-5" /> Back to Map
+          </button>
+
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={goToLobby}
+              className="text-sky-400 font-bold hover:text-sky-600 flex items-center gap-2 px-4 py-2"
+            >
+              <Home className="w-4 h-4" /> {role === "student" ? "Home" : "Lobby"}
+            </button>
+          </div>
+        </div>
         <AdventureView 
           story={story} 
           classMission={classMission} 
@@ -284,16 +296,6 @@ export default function DashboardClient({
             <div className="flex items-center gap-3 md:gap-6 animate-in slide-in-from-left duration-500 w-full md:w-auto">
               {selectedChildId ? (
                 <div className="flex items-center gap-3 md:gap-6">
-                  {role !== "student" && (
-                    <button 
-                      onClick={handleDeselectChild}
-                      className="flex items-center gap-2 p-2.5 md:pl-4 md:pr-6 md:py-4 bg-white text-sky-600 rounded-xl md:rounded-3xl shadow-xl hover:bg-sky-50 transition-all group border-2 md:border-4 border-white"
-                      title="Back to Hub"
-                    >
-                      <ChevronLeft className="w-5 h-5 md:w-8 md:h-8 group-hover:-translate-x-1 transition-transform" />
-                      <span className="hidden md:inline font-black uppercase text-xs tracking-wider">Back to Hub</span>
-                    </button>
-                  )}
                   <div className="flex items-center gap-3 md:gap-4">
                     <div className="w-12 h-12 md:w-20 md:h-20 rounded-xl md:rounded-[32px] bg-orange-100 border-2 md:border-4 border-white shadow-2xl overflow-hidden shrink-0">
                       {activeChild?.avatar_url ? (
@@ -328,6 +330,17 @@ export default function DashboardClient({
             {/* RIGHT: Consolidated Actions */}
             <div className="flex items-center gap-2 md:gap-4 w-full md:w-auto justify-center md:justify-end">
               
+              {/* Home Button */}
+              {selectedChildId && (
+                <button
+                  onClick={goToLobby}
+                  className="p-3 md:p-4 bg-white text-sky-600 rounded-xl md:rounded-3xl shadow-xl hover:bg-sky-50 transition-all group border-2 md:border-4 border-white"
+                  title={role === "student" ? "Home" : "Go to Lobby"}
+                >
+                  <Home className="w-5 h-5 md:w-8 md:h-8 group-hover:scale-110 transition-transform" />
+                </button>
+              )}
+
               {/* Quest Log Button */}
               {selectedChildId && (
                 <button
@@ -414,15 +427,6 @@ export default function DashboardClient({
                 <Sparkles className="w-3.5 h-3.5 md:w-4 md:h-4" /> 
                 {selectedChildId ? 'New Quest' : 'Create'}
               </button>
-
-              {role === "student" && (
-                <Link
-                  href="/join"
-                  className="flex items-center gap-1.5 md:gap-2 px-4 md:px-6 py-2.5 md:py-3 bg-red-100 text-red-600 font-black rounded-xl md:rounded-full shadow-lg border-b-4 border-red-300 hover:bg-red-200 active:translate-y-1 active:border-b-0 transition-all text-xs md:text-sm whitespace-nowrap"
-                >
-                  <LogOut className="w-3.5 h-3.5 md:w-4 md:h-4" /> <span className="hidden xs:inline">Exit</span>
-                </Link>
-              )}
             </div>
           </div>
         </div>
@@ -430,7 +434,7 @@ export default function DashboardClient({
 
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         {!selectedChildId ? (
-          /* --- LOBBY VIEWS (Blocked for students via logic above, but hard-gated here too) --- */
+          /* --- LOBBY VIEWS --- */
           <div className="animate-in zoom-in-95 duration-500">
             {role === "student" ? (
               <div className="text-center p-20">
@@ -445,7 +449,7 @@ export default function DashboardClient({
                 classMission={classMission}
                 classMissions={classMissions}
                 classCode={classCode}
-                onSelectStudent={(id) => setSelectedChildId(id)}
+                onSelectStudent={(id) => router.push(`/dashboard?childId=${id}`)}
               />
             ) : activeTab === "missions" ? (
               <div className="max-w-4xl mx-auto space-y-6 md:space-y-8 mt-4 md:mt-8">
@@ -516,7 +520,9 @@ export default function DashboardClient({
                 {children.map((child) => (
                   <div 
                     key={child.id} 
-                    onClick={() => setSelectedChildId(child.id)}
+                    onClick={() => {
+                      window.location.href = `/dashboard?childId=${child.id}`;
+                    }}
                     className="bg-white rounded-[32px] md:rounded-[56px] p-6 md:p-12 shadow-2xl border-[3px] md:border-4 border-white hover:border-sky-400 hover:ring-[8px] md:hover:ring-[16px] hover:ring-sky-50 transition-all group relative cursor-pointer hover:-translate-y-2 md:hover:-translate-y-4"
                   >
                     <button 

@@ -76,12 +76,12 @@ export default async function StudentDashboardPage() {
       {/* Floating Navigation (Student Version) */}
       <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-7xl">
         <div className="bg-white/80 backdrop-blur-xl border-4 border-white shadow-2xl rounded-[32px] p-4 flex justify-between items-center px-8 md:px-12 ring-8 ring-sky-50/50">
-          <div className="flex items-center gap-3 group cursor-pointer">
+          <Link href="/student/dashboard" className="flex items-center gap-3 group cursor-pointer">
             <div className="bg-sky-500 p-2 rounded-xl shadow-lg border-2 border-sky-400 group-hover:rotate-6 transition-transform">
               <span className="text-2xl">🖋️</span>
             </div>
             <h1 className="text-xl md:text-2xl font-black text-sky-600 font-comic tracking-tight hidden sm:block text-shadow-sm">QuestQuill</h1>
-          </div>
+          </Link>
           
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 bg-sky-100 px-4 py-2 rounded-xl">

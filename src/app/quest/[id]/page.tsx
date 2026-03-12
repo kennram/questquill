@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ChevronLeft, AlertTriangle } from "lucide-react";
 import { cookies } from "next/headers";
 
-export default async function QuestPage({ params }: { params: { id: string } }) {
+export default async function QuestPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   // Handle temporary stories (not saved in DB)
@@ -83,7 +83,7 @@ export default async function QuestPage({ params }: { params: { id: string } }) 
             href="/dashboard" 
             className="inline-flex items-center gap-2 text-sky-400 font-bold hover:text-sky-600 transition-colors bg-sky-50/50 px-6 py-3 rounded-full border-2 border-transparent hover:border-sky-100 group"
           >
-            All Explorers
+            Back to Hub
           </Link>
         )}
       </div>

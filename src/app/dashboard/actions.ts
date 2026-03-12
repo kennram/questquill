@@ -163,10 +163,19 @@ export async function updateProfile(formData: FormData) {
   return { success: true };
 }
 
+// Whitelist for authorized testers
+const TESTER_EMAILS = ["test@questquill.com", "admin@questquill.com", "kenneth@questquill.com"];
+
 export async function togglePremiumDebug() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
+  if (!user || !user.email) return;
+
+  // Security: Only allow authorized testers to toggle premium for free
+  if (!TESTER_EMAILS.includes(user.email)) {
+    console.error(`Unauthorized premium toggle attempt by ${user.email}`);
+    return;
+  }
 
   const { data: profile } = await supabase.from("profiles").select("is_premium").eq("id", user.id).single();
   const newStatus = !profile?.is_premium;

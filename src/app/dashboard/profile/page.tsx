@@ -72,6 +72,9 @@ export default async function ProfilePage() {
   };
   const currentRank = getRank(totalStories || 0);
 
+  const TESTER_EMAILS = ["test@questquill.com", "admin@questquill.com", "kenneth@questquill.com"];
+  const isTester = user.email && TESTER_EMAILS.includes(user.email);
+
   return (
     <div className="min-h-screen bg-[#F0F9FF] font-sans pb-20 selection:bg-orange-200">
       

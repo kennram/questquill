@@ -249,9 +249,11 @@ export default function AdventureMap({
                         alt={discovery.name} 
                         className="w-full h-full object-contain drop-shadow-md" 
                         onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.onerror = null; // Prevent infinite loop
                           const seed = Math.floor(Math.random() * 10000);
                           const keywords = `${discovery.name.split(' ').join(',')},magic,treasure`;
-                          (e.target as HTMLImageElement).src = `https://loremflickr.com/512/512/${encodeURIComponent(keywords)}?lock=${seed}`;
+                          target.src = `https://loremflickr.com/512/512/${encodeURIComponent(keywords)}?lock=${seed}`;
                         }}
                       />
                     </div>

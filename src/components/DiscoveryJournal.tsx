@@ -81,8 +81,10 @@ export default function DiscoveryJournal({
                         alt={sticker.name} 
                         className="w-full h-full object-cover rounded-full"
                         onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.onerror = null; // Prevent infinite loop
                           const keywords = `${sticker.name.split(' ').join(',')},toy,sticker`;
-                          (e.target as HTMLImageElement).src = `https://loremflickr.com/512/512/${encodeURIComponent(keywords)}?lock=${i}`;
+                          target.src = `https://loremflickr.com/512/512/${encodeURIComponent(keywords)}?lock=${i}`;
                         }}
                       />
                     </div>
@@ -124,9 +126,11 @@ export default function DiscoveryJournal({
                         alt={treasure.name} 
                         className="w-full h-full object-contain"
                         onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.onerror = null; // Prevent infinite loop
                           const seed = Math.floor(Math.random() * 10000);
                           const keywords = `${treasure.name.split(' ').join(',')},magic,treasure`;
-                          (e.target as HTMLImageElement).src = `https://loremflickr.com/512/512/${encodeURIComponent(keywords)}?lock=${seed}`;
+                          target.src = `https://loremflickr.com/512/512/${encodeURIComponent(keywords)}?lock=${seed}`;
                         }}
                       />
                     </div>

@@ -132,6 +132,8 @@ export default function DashboardClient({
     if (role === "student") return;
     setSelectedChildId(null);
     setActiveTab("world");
+    // Clear URL parameter to prevent auto-selection on refresh
+    router.replace('/dashboard');
   };
 
   // Handle mission completion masking

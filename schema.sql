@@ -5,6 +5,7 @@ CREATE TABLE profiles (
     role TEXT DEFAULT 'parent', -- 'parent' or 'teacher'
     avatar_url TEXT,
     is_premium BOOLEAN DEFAULT FALSE,
+    is_tester BOOLEAN DEFAULT FALSE, -- Allows access to debug tools/free premium
     class_mission TEXT, -- Shared mission/prompt for all students (Teacher only)
     class_missions TEXT[] DEFAULT '{}', -- Multiple active missions
     class_code TEXT UNIQUE, -- 6-character code for student login (e.g. LION-92)

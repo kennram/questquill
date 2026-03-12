@@ -163,22 +163,27 @@ export async function updateProfile(formData: FormData) {
   return { success: true };
 }
 
-// Whitelist for authorized testers
-const TESTER_EMAILS = ["test@questquill.com", "admin@questquill.com", "kenneth@questquill.com"];
-
 export async function togglePremiumDebug() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user || !user.email) return;
+  if (!user) return;
 
-  // Security: Only allow authorized testers to toggle premium for free
-  if (!TESTER_EMAILS.includes(user.email)) {
-    console.error(`Unauthorized premium toggle attempt by ${user.email}`);
+  // 1. Fetch profile to check is_tester flag
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_premium, is_tester")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile) return;
+
+  // Security: Only allow users with is_tester=true to toggle premium for free
+  if (!profile.is_tester) {
+    console.error(`Unauthorized premium toggle attempt by user ${user.id}`);
     return;
   }
 
-  const { data: profile } = await supabase.from("profiles").select("is_premium").eq("id", user.id).single();
-  const newStatus = !profile?.is_premium;
+  const newStatus = !profile.is_premium;
 
   const { error } = await supabase.from("profiles").update({ is_premium: newStatus }).eq("id", user.id);
   if (error) console.error("DEBUG PREMIUM TOGGLE ERROR:", error.message);

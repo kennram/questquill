@@ -72,8 +72,7 @@ export default async function ProfilePage() {
   };
   const currentRank = getRank(totalStories || 0);
 
-  const TESTER_EMAILS = ["test@questquill.com", "admin@questquill.com", "kenneth@questquill.com"];
-  const isTester = user.email && TESTER_EMAILS.includes(user.email);
+  const isTester = !!profile?.is_tester;
 
   return (
     <div className="min-h-screen bg-[#F0F9FF] font-sans pb-20 selection:bg-orange-200">
@@ -168,8 +167,8 @@ export default async function ProfilePage() {
               </div>
             </div>
 
-            {/* ADMIN TOOLS - DRAMATIC OVERHAUL */}
-            {user.email === 'kenndavisux@gmail.com' && (
+            {/* ADMIN TOOLS */}
+            {isTester && (
               <div className="bg-slate-950 rounded-[48px] p-10 shadow-2xl text-white border-b-[12px] border-slate-800 relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-8 opacity-5">
                   <Bug className="w-32 h-32" />
